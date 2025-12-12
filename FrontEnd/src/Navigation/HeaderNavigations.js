@@ -39,7 +39,5 @@ const HeaderNavigation = [{
 {
     id:"Most loved",
     title:"Most Loved",
-    subHeading:[
-
-    ]
+    
 }]
