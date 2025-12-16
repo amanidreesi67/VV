@@ -1,6 +1,6 @@
 export const HeaderNavigation = [{
-    id:"new",
-    title:"New",
+    id:"New In",
+    title:"New In",
     subHeading:[
         {
             id:"all-new-in",

@@ -20,23 +20,20 @@ function Header() {
         <div className="text-white  flex gap-7 max-w-[1150px] mx-auto">
           {HeaderNavigation.map((data) => (
             <div key={data.id} className="relative group">
-              
               {/* Title */}
-<h1 className="cursor-pointer py-2 group">
-  {/* Row */}
-  <div className="flex justify-between items-center">
-    <span>{data.title}</span>
+              <h1 className="cursor-pointer py-2 group">
+                {/* Row */}
+                <div className="flex justify-between items-center">
+                  <span>{data.title}</span>
 
-    <span className="text-[22px] transition-transform duration-300 group-hover:rotate-180">
-      <RiArrowDropDownLine />
-    </span>
-  </div>
+                  <span className="text-[22px] transition-transform duration-300 group-hover:rotate-180">
+                    <RiArrowDropDownLine />
+                  </span>
+                </div>
 
-  {/* Underline */}
-  <div className="h-[2px] w-0 bg-[#F4F4F4] mt-[1px]  ml-3 mr-3 transition-all duration-300 group-hover:w-[70%]"></div>
-</h1>
-
-              
+                {/* Underline */}
+                <div className="h-[2px] w-0 bg-[#F4F4F4] mt-[1px]  ml-3 mr-3 transition-all duration-300 group-hover:w-[70%]"></div>
+              </h1>
 
               {/* Subheading */}
               {data.subHeading && (
@@ -51,13 +48,12 @@ function Header() {
                   ))}
                 </div>
               )}
-
             </div>
           ))}
         </div>
       </div>
     </>
-  )
+  );
 }
 
 export default Header
