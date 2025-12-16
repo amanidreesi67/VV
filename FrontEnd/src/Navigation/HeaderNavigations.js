@@ -1,4 +1,4 @@
-const HeaderNavigation = [{
+export const HeaderNavigation = [{
     id:"new",
     title:"New",
     subHeading:[
