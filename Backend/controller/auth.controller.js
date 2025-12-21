@@ -73,8 +73,6 @@ export const testEmail = async(req,res)=>{
                <p style="font-size:14px;color:#666;">
                If you did not request this, you can safely ignore this email.
                </p>
-
-
          </div>
          `
 
