@@ -6,7 +6,7 @@ const JWT_SECRET_KEY = process.env.JWT_SECRE_KEY
 
 const generateToken = (userId)=>{
     const token = jwt.sign({userId},JWT_SECRET_KEY,{expiresIn:'48h'})
-    return token
+    return token;
 }
 
 export default generateToken
