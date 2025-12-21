@@ -70,28 +70,11 @@ export const testEmail = async(req,res)=>{
                Please confirm that this email address belongs to you.
                </p>
 
-               <div style="text-align:center;margin:30px 0;">
-               <a href="#"
-                  style="background:#2563eb;color:#ffffff;text-decoration:none;
-                           padding:14px 28px;border-radius:6px;font-size:16px;
-                           display:inline-block;">
-                  ✅ Verify Email
-               </a>
-               </div>
-
                <p style="font-size:14px;color:#666;">
                If you did not request this, you can safely ignore this email.
                </p>
 
-               <p style="font-size:14px;color:#666;margin-top:20px;">
-               Thanks,<br/>
-               <strong>The Team 🚀</strong>
-               </p>
-            </div>
 
-            <p style="font-size:12px;color:#888;text-align:center;margin-top:15px;">
-               © 2025 Your Company. All rights reserved.
-            </p>
          </div>
          `
 
