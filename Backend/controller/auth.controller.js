@@ -8,7 +8,7 @@ import transporter from '../config/transporter.js';
 export const register = async(req,res) =>{
      try{
         console.log("controller data", req.body);
-        const user = await userservices.registerUser(req); // call register service
+        const user = await userservices.registerUser(req.body); // call register service
         const jwt =  generateToken(user._id); // generate token after register
        res.status(200).json({jwt, message:"Register Successfull"}); // response with jwt token
      } catch(err){
@@ -22,7 +22,7 @@ export const register = async(req,res) =>{
 export const login = async(req,res)=>{
    try{
       const {email,password} = req.body;  // get email and password from request body
-      const user = await userservices.getUserByEmail(req);  // call service to get user by email
+      const user = await userservices.getUserByEmail(email);  // call service to get user by email
       if(!user){
          return res.status(401).json({message:"User Is Not Registered With This Email "});
       }
@@ -32,8 +32,8 @@ export const login = async(req,res)=>{
          return res.status(400).json({message:"Invalid Password "});  // response invalid password
       }
 
-      const jwt = await generateToken(user._id); // generate token after login
-      return res.status(200).json({jwt, message:"Login Successfull"}); // response with jwt token
+      const jwt_token = await generateToken(user._id); // generate token after login
+      return res.status(200).json({jwt_token, message:"Login Successfull"}); // response with jwt token
 
    }catch(err){
       res.status(400).json(err.message);
@@ -45,7 +45,7 @@ export const testEmail = async(req,res)=>{
       const {email} = req.body;
       const sendEmail = {
          from: process.env.SMTP_USER,
-         to:email,
+         to: email,
          subject: "TO Verify contact",
          text:"Hello! This Is a Test email for NodeMailer",
          html: `
@@ -70,9 +70,7 @@ export const testEmail = async(req,res)=>{
                Please confirm that this email address belongs to you.
                </p>
 
-               <p style="font-size:14px;color:#666;">
-               If you did not request this, you can safely ignore this email.
-               </p>
+            </div>
          </div>
          `
 
@@ -81,6 +79,7 @@ export const testEmail = async(req,res)=>{
       res.status(200).json({message:"Mail Sended Successfully",mail});
 
    }catch(err){
+      console.log("Error",err.message)
       res.status(400).json({message:"failed to send message",error:err.message});
    }
 }
