@@ -1,10 +1,33 @@
-import React from 'react'
-import { HeaderNavigation } from '../Navigation/HeaderNavigations'
+import React, { useState, useEffect, useRef } from "react";
+import { HeaderNavigation } from "../Navigation/HeaderNavigations";
 import { RiArrowDropDownLine } from "react-icons/ri";
 
 function Header() {
+  const [show, setShow] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const controlNavbar = () => {
+      if (window.scrollY > lastScrollY.current) {
+        setShow(false);
+      } else {
+        setShow(true);
+      }
+      lastScrollY.current = window.scrollY;
+    };
+
+    window.addEventListener("scroll", controlNavbar);
+    return () => {
+      window.removeEventListener("scroll", controlNavbar);
+    };
+  }, []);
+
   return (
-    <>
+    <header
+      className={`sticky top-0 z-50 bg-white transition-transform duration-300 ${
+        show ? "translate-y-0" : "-translate-y-full"
+      }`}
+    >
       <div className="w-full bg-black text-white text-center py-2">
         <span className="hover:text-gray-400 cursor-pointer">
           up to 80 % off
@@ -32,7 +55,7 @@ function Header() {
                 </div>
 
                 {/* Underline */}
-                <div className="h-[2px] w-0 bg-[#F4F4F4] mt-[1px]  ml-3 mr-3 transition-all duration-300 group-hover:w-[70%]"></div>
+                <div className="h-[2px] w-0 bg-[#F4F4F4] mt-px  ml-3 mr-3 transition-all duration-300 group-hover:w-[70%]"></div>
               </h1>
 
               {/* Subheading */}
@@ -52,8 +75,8 @@ function Header() {
           ))}
         </div>
       </div>
-    </>
+    </header>
   );
 }
 
-export default Header
+export default Header;
