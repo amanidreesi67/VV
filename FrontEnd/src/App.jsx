@@ -12,9 +12,9 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/product" element = { <Product /> } />
-        <Route path="/:levelOne/:levelTwo/:LevelThree" element = { <Product /> } />
-        <Route path="/:levelOne/:levelTwo" element = { <Product /> } />
+        <Route path="/pdt/:levelOne" element={<Product />} />
+        <Route path="/pdt/:levelOne/:levelTwo" element={<Product />} />
+        <Route path="/pdt/:levelOne/:levelTwo/:LevelThree" element={<Product />} />
       </Routes>
 
       <Footer />

@@ -94,7 +94,7 @@ function Home() {
                 src={data.img}
                 className="w-full h-[450px] object-cover rounded-xl overflow-hidden"
               />
-              <p className="absolute bottom-0 left-0 w-full text-center font-bold text-[14px] uppercase bg-white p-2">
+              <p className="absolute -bottom-px left-0 w-full text-center font-bold text-[14px] uppercase bg-white p-2">
                 Shop Now
               </p>
             </SwiperSlide>

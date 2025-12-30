@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HeaderNavigation } from "../Navigation/HeaderNavigations";
 import { RiArrowDropDownLine } from "react-icons/ri";
+import { FaSearch, FaRegUser, FaRegStar } from "react-icons/fa";
+import { MdOutlineShoppingBag } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
   const [show, setShow] = useState(true);
   const lastScrollY = useRef(0);
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const controlNavbar = () => {
@@ -34,9 +39,14 @@ function Header() {
         </span>
       </div>
 
-      <div className="flex justify-between w-[1000px] mx-auto py-3">
-        <div>VV</div>
-        <div>Icons</div>
+      <div className="flex justify-between w-[1390px] mx-auto py-3">
+        <div className="text-2xl font-bold cursor-pointer" onClick={() => navigate("/")}>UPTOWNIE</div>
+        <div className="flex mt-2 gap-4">
+          <FaSearch className="text-[20px] cursor-pointer"/>
+          <FaRegUser className="text-[20px] cursor-pointer"/>
+          <FaRegStar className="text-[20px] cursor-pointer"/>
+          <MdOutlineShoppingBag className="text-[20px] cursor-pointer"/>
+        </div>
       </div>
 
       <div className="w-full bg-[#252525]">
@@ -65,6 +75,7 @@ function Header() {
                     <p
                       key={sub.id}
                       className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => navigate(sub.link)}
                     >
                       {sub.title}
                     </p>
