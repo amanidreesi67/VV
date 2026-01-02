@@ -23,7 +23,7 @@ export default function FloatingButtons() {
       <button
         className="
           fixed bottom-5 right-5
-          z-[999999]
+          z-999999
           bg-[#25D366] text-black
           text-[50px]
           rounded-full
