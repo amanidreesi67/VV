@@ -8,7 +8,7 @@ export default function FloatingButtons() {
       <button
         className="
           fixed bottom-5 left-5
-          z-[999999]
+          z-999999
           bg-black text-white
           px-4 py-3 rounded-full
           shadow-lg
