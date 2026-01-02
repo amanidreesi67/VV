@@ -20,7 +20,7 @@ function Product() {
   return (
     <div className=" min-h-screen bg-white relative p-5">
       {/* Top Bar */}
-      <div className="bg-[#E5E5E5] rounded-2xl sticky top-0 z-20 px-6 py-4 flex items-center justify-between">
+      <div className="bg-[#E5E5E5] rounded-2xl sticky top-0 z-30 px-6 py-4 flex items-center justify-between">
         <button
           onClick={() => setIsFilterOpen(true)}
           className="flex items-center cursor-pointer gap-2 font-medium text-gray-700 hover:text-black transition-colors"
@@ -91,14 +91,14 @@ function Product() {
           </div>
 
           {/* Sidebar Content (Scrollable) */}
-          <div className="flex-1 overflow-y-auto px-6 py-2 space-y-8">
+          <div className="flex-1 overflow-y-auto px-6 py-2 space-y-8 custom-scrollbar">
             {/* Color Section */}
             <div>
               <div className="flex items-center justify-between mb-4 cursor-pointer">
                 <h3 className="font-bold text-sm uppercase">Color</h3>
                 <IoIosArrowUp />
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-[280px] overflow-y-auto p-2 pr-2 custom-scrollbar">
                 {[
                   { name: "Beige", count: 14, color: "#F5F5DC" },
                   { name: "Black", count: 70, color: "#000000" },
@@ -108,6 +108,13 @@ function Product() {
                   { name: "Grey", count: 4, color: "#808080" },
                   { name: "Maroon", count: 5, color: "#800000" },
                   { name: "Multi", count: 3, type: "multi" },
+                  { name: "Mustard", count: 3, color: "#FFDB58" },
+                  { name: "Orange", count: 3, color: "#FFA500" },
+                  { name: "Pink", count: 3, color: "#FFC0CB" },
+                  { name: "Purple", count: 3, color: "#800080" },
+                  { name: "Red", count: 12, color: "#FF0000" },
+                  { name: "White", count: 12, color: "#FFFFFF" },
+                  { name: "Yellow", count: 12, color: "#FFFF00" },
                 ].map((item) => (
                   <div
                     key={item.name}
@@ -259,6 +266,10 @@ function Product() {
                     {product.badge}
                   </span>
                 )}
+                {/* Select Options Button */}
+                <button className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-[2px] hover:bg-black hover:text-white text-black py-2.5 text-sm font-medium rounded shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-20">
+                  Select options
+                </button>
               </div>
 
               {/* Product Info */}

@@ -171,8 +171,8 @@ const ProductData = [
     id: 7,
     title: "Casual Denim Jacket",
     images: [
-      "https://uptownie.com/cdn/shop/files/UptownieMar20242514.jpg?v=1711619623&width=360",
-      "https://uptownie.com/cdn/shop/files/UptownieMar20242520.jpg?v=1711619623&width=360",
+      "https://uptownie.com/cdn/shop/files/17_2ae65d84-c5ae-4ce4-bd37-d86977200b6e_540x.png?v=1765954440",
+      "https://uptownie.com/cdn/shop/files/image_2_449_540x.png?v=1765954440",
     ],
     price: 2999,
     discountedPrice: 1499,
@@ -198,8 +198,8 @@ const ProductData = [
     id: 8,
     title: "High Waist Wide Leg Trousers",
     images: [
-      "https://uptownie.com/cdn/shop/files/UptownieFeb20240954_1_74af6f7f-d539-444f-96a9-06380678d492.jpg?v=1709121884&width=360",
-      "https://uptownie.com/cdn/shop/files/UptownieFeb20240950_1_2f126588-e215-4673-9097-85265089e900.jpg?v=1709121884&width=360",
+      "https://uptownie.com/cdn/shop/files/20_6fc3d4a7-547f-4f20-8c22-7067894284c2_540x.png?v=1765954758",
+      "https://uptownie.com/cdn/shop/files/497_810e97f9-5fdc-4cf5-8252-e6a1b71350ef_540x.png?v=1765954758",
     ],
     price: 1999,
     discountedPrice: 999,
@@ -227,8 +227,8 @@ const ProductData = [
     id: 9,
     title: "Placeholder Product A",
     images: [
-      "https://via.placeholder.com/360x480?text=Product+Image+1",
-      "https://via.placeholder.com/360x480?text=Product+Image+2",
+      "https://uptownie.com/cdn/shop/files/website_new_launch_revamp_10-12_7_540x.png?v=1766037253",
+      "https://uptownie.com/cdn/shop/files/275_079d2c95-e28a-40ba-bc82-29dce6cdb156_540x.png?v=1766037253",
     ],
     price: 2499,
     discountedPrice: 1999,
@@ -250,8 +250,8 @@ const ProductData = [
     id: 10,
     title: "Placeholder Product B",
     images: [
-      "https://via.placeholder.com/360x480?text=Product+Image+1",
-      "https://via.placeholder.com/360x480?text=Product+Image+2",
+      "https://uptownie.com/cdn/shop/files/29_e88c3536-850b-4dc7-9dc1-bb223bae536b_540x.png?v=1767159388",
+      "https://uptownie.com/cdn/shop/files/284_88d116d2-7f8a-4557-8e4b-b9af6091775c_540x.png?v=1767159388",
     ],
     price: 1599,
     discountedPrice: 899,

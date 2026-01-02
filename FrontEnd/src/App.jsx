@@ -4,10 +4,12 @@ import Footer from "./Common/Footer";
 import Headers from "./Common/Header"; // Make sure this file exists
 import Home from "./Home";
 import Product from "./Product/Product";
+import FloatingButtons from "../Global/FloatingButtons";
 
 function App() {
   return (
     <>
+    <FloatingButtons />
       <Headers />
 
       <Routes>
