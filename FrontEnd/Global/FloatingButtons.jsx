@@ -24,10 +24,11 @@ export default function FloatingButtons() {
         className="
           fixed bottom-5 right-5
           z-999999
-          bg-[#25D366] text-black
+          bg-white
+         text-[#25D366]
           text-[50px]
           rounded-full
-          shadow-lg border border-white
+          shadow-lg
           hover:scale-105
           transition
         "
