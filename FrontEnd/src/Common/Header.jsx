@@ -4,12 +4,13 @@ import { RiArrowDropDownLine } from "react-icons/ri";
 import { FaSearch, FaRegUser, FaRegStar } from "react-icons/fa";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { useCart } from "../Context/CartContext";
 
 function Header() {
   const [show, setShow] = useState(true);
   const lastScrollY = useRef(0);
   const navigate = useNavigate();
-
+  const { setIsCartOpen, wishlistItems, cartItems } = useCart();
 
   useEffect(() => {
     const controlNavbar = () => {
@@ -40,12 +41,38 @@ function Header() {
       </div>
 
       <div className="flex justify-between w-[1390px] mx-auto py-3">
-        <div className="text-2xl font-bold cursor-pointer" onClick={() => navigate("/")}>UPTOWNIE</div>
+        <div
+          className="text-2xl font-bold cursor-pointer"
+          onClick={() => navigate("/")}
+        >
+          UPTOWNIE
+        </div>
         <div className="flex mt-2 gap-4">
-          <FaSearch className="text-[20px] cursor-pointer"/>
-          <FaRegUser className="text-[20px] cursor-pointer"/>
-          <FaRegStar className="text-[20px] cursor-pointer"/>
-          <MdOutlineShoppingBag className="text-[20px] cursor-pointer"/>
+          <FaSearch className="text-[20px] cursor-pointer" />
+          <FaRegUser className="text-[20px] cursor-pointer" />
+
+          <div
+            className="relative group cursor-pointer"
+            onClick={() => navigate("/wishlist")}
+          >
+            <FaRegStar className="text-[20px]" />
+            {wishlistItems.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+                {wishlistItems.length}
+              </span>
+            )}
+          </div>
+          <div
+            className="relative group cursor-pointer"
+            onClick={() => setIsCartOpen(true)}
+          >
+            <MdOutlineShoppingBag className="text-[20px]" />
+            {cartItems.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+                {cartItems.length}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
