@@ -76,6 +76,42 @@ export const CartProvider = ({ children }) => {
     );
   };
 
+  const updateCartItem = (oldItem, newVariant, newSize) => {
+    setCartItems((prev) => {
+      // Remove old item
+      const filtered = prev.filter(
+        (item) =>
+          !(
+            item.id === oldItem.id &&
+            item.variant.color === oldItem.variant.color &&
+            item.size === oldItem.size
+          )
+      );
+
+      // Check if new item config exists
+      const existingIndex = filtered.findIndex(
+        (item) =>
+          item.id === oldItem.id &&
+          item.variant.color === newVariant.color &&
+          item.size === newSize
+      );
+
+      if (existingIndex > -1) {
+        filtered[existingIndex].quantity += oldItem.quantity;
+        return filtered;
+      } else {
+        return [
+          ...filtered,
+          {
+            ...oldItem,
+            variant: newVariant,
+            size: newSize,
+          },
+        ];
+      }
+    });
+  };
+
   const addToWishlist = (product) => {
     setWishlistItems((prev) => {
       if (!prev.find((item) => item.id === product.id)) {
@@ -99,6 +135,7 @@ export const CartProvider = ({ children }) => {
         addToCart,
         removeFromCart,
         updateQuantity,
+        updateCartItem,
         addToWishlist,
         removeFromWishlist,
       }}

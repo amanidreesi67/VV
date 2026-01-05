@@ -10,6 +10,9 @@ import { CartProvider } from "./Context/CartContext";
 import CartDrawer from "./Cart/CartDrawer";
 import FloatingButtons from "../Global/FloatingButtons";
 import ContactUs from "./ContactUs/ContactUs";
+import TermsAndConditions from "./TermsAndConditions/TermsAndConditions";
+import PaymentsAndOrders from "./PaymentsAndOrders/PaymentsAndOrders";
+import ShippingAndReturns from "./ShippingAndReturns/ShippingAndReturns";
 
 function App() {
   return (
@@ -29,6 +32,9 @@ function App() {
         <Route path="/product/:productId" element={<ProductDetails />} />
         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/payment-orders" element={<PaymentsAndOrders />} />
+        <Route path="/shipping-returns" element={<ShippingAndReturns />} />
       </Routes>
 
       <Footer />

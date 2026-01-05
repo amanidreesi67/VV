@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import footerNavigations from "../Navigation/footerNavigations.js";
 import {
   FaPinterest,
@@ -10,7 +11,15 @@ import {
 
 function Footer() {
   const [toggle, setToggle] = useState(false);
-  const popular =[{id:1,title:"Women Tops",link:"/pdt/women-tops"},{id:2,title:"Women Dresses",link:"/pdt/women-dresses"},{id:3,title:"Women Skirts",link:"/pdt/women-skirts"},{id:4,title:"Women Bottoms Pants",link:"/pdt/women-bottoms-pants"},{id:5,title:"Women Jumpsuits",link:"/pdt/women-jumpsuits"},{id:6,title:"Women Tunics",link:"/pdt/women-tunics"},{id:7,title:"Women T-Shirts",link:"/pdt/women-t-shirts"}]
+  const popular = [
+    { id: 1, title: "Women Tops", link: "/pdt/women-tops" },
+    { id: 2, title: "Women Dresses", link: "/pdt/women-dresses" },
+    { id: 3, title: "Women Skirts", link: "/pdt/women-skirts" },
+    { id: 4, title: "Women Bottoms Pants", link: "/pdt/women-bottoms-pants" },
+    { id: 5, title: "Women Jumpsuits", link: "/pdt/women-jumpsuits" },
+    { id: 6, title: "Women Tunics", link: "/pdt/women-tunics" },
+    { id: 7, title: "Women T-Shirts", link: "/pdt/women-t-shirts" },
+  ];
   return (
     <div className="w-full bg-[#E8E8E8] p-15">
       <div className="grid grid-cols-4 gap-4">
@@ -24,7 +33,7 @@ function Footer() {
                   key={subData.id}
                   className="text-gray-400 hover:text-black cursor-pointer group w-fit"
                 >
-                  <a href={subData.link}>{subData.title}</a>
+                  <Link to={subData.link}>{subData.title}</Link>
                   {/* Underline */}
                   <div className="h-[2px] w-0 bg-black mt-px transition-all duration-300 group-hover:w-full"></div>
                 </li>
@@ -195,9 +204,21 @@ function Footer() {
           </p>
           <div className="flex flex-row gap-1 text-[10px] mt-4">
             Our Popular Categories:
+            <span className="text-[9px] text-gray-400">
+              <Link
+                to="/terms-and-conditions"
+                className="hover:text-black hover:underline transition-colors"
+              >
+                Terms & Conditions
+              </Link>
+            </span>
+            <span className="text-gray-300">|</span>
             {popular.map((data, index) => (
               <span key={data.id}>
-                <a className="text-[9px] transition-all duration-300 text-gray-400 hover:text-black cursor-pointer" href={data.link}>
+                <a
+                  className="text-[9px] transition-all duration-300 text-gray-400 hover:text-black cursor-pointer"
+                  href={data.link}
+                >
                   {data.title}
                 </a>
                 {index !== popular.length - 1 && " | "}
