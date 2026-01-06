@@ -13,6 +13,9 @@ import ContactUs from "./ContactUs/ContactUs";
 import TermsAndConditions from "./TermsAndConditions/TermsAndConditions";
 import PaymentsAndOrders from "./PaymentsAndOrders/PaymentsAndOrders";
 import ShippingAndReturns from "./ShippingAndReturns/ShippingAndReturns";
+import PrivacyPolicy from "./PrivacyPolicy/PrivacyPolicy";
+import CampusAmbassador from "./CampusAmbassador/CampusAmbassador";
+import SizeChart from "./SizeChart/SizeChart";
 
 function App() {
   return (
@@ -35,6 +38,9 @@ function App() {
         <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
         <Route path="/payment-orders" element={<PaymentsAndOrders />} />
         <Route path="/shipping-returns" element={<ShippingAndReturns />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/cap" element={<CampusAmbassador />} />
+        <Route path="/size-chart" element={<SizeChart />} />
       </Routes>
 
       <Footer />
