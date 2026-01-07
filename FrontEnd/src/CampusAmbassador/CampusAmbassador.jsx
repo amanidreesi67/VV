@@ -145,8 +145,8 @@ const CampusAmbassador = () => {
       </div>
 
       {/* What You Need To Do Section: Full Width Container */}
-      <div className="w-full bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4">
+      <div className="w-full bg-gray-200 py-16">
+        <div className="max-w-8xl mx-auto px-4">
           <div className="text-center mb-16">
             <p className="text-sm uppercase tracking-widest text-gray-600 mb-2">
               Be a Social Media Influencer
@@ -156,7 +156,7 @@ const CampusAmbassador = () => {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-left max-w-7xl mx-auto">
             {responsibilities.map((item, index) => (
               <div key={index} className="flex items-start space-x-6">
                 <div className="shrink-0 mt-1">{item.icon}</div>

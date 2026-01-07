@@ -16,6 +16,11 @@ import ShippingAndReturns from "./ShippingAndReturns/ShippingAndReturns";
 import PrivacyPolicy from "./PrivacyPolicy/PrivacyPolicy";
 import CampusAmbassador from "./CampusAmbassador/CampusAmbassador";
 import SizeChart from "./SizeChart/SizeChart";
+import AboutUs from "./AboutUs/AboutUs";
+import MyReturns from "./MyReturns/MyReturns";
+import Blog from "./Blog/Blog";
+import BlogDetails from "./Blog/BlogDetails";
+import ScrollToTop from "./ScrollTOTop";
 
 function App() {
   return (
@@ -23,6 +28,7 @@ function App() {
       <FloatingButtons />
       <Headers />
       <CartDrawer />
+      <ScrollToTop />
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -41,6 +47,10 @@ function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/cap" element={<CampusAmbassador />} />
         <Route path="/size-chart" element={<SizeChart />} />
+        <Route path="/about" element={<AboutUs />} />
+        <Route path="/return" element={<MyReturns />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:id" element={<BlogDetails />} />
       </Routes>
 
       <Footer />

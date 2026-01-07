@@ -77,7 +77,7 @@ function Product() {
 
       {/* Slide-out Filter Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-80 bg-white/80 backdrop-blur-md z-100 transform transition-transform duration-300 ease-in-out shadow-2xl ${
+        className={`fixed top-0 left-0 h-full w-80 bg-white/80 backdrop-blur-md z-9999 transform transition-transform duration-300 ease-in-out shadow-2xl ${
           isFilterOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
