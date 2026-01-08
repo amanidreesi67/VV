@@ -21,6 +21,7 @@ import MyReturns from "./MyReturns/MyReturns";
 import Blog from "./Blog/Blog";
 import BlogDetails from "./Blog/BlogDetails";
 import ScrollToTop from "./ScrollTOTop";
+import Careers from "./Careers/Careers";
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
         <Route path="/return" element={<MyReturns />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogDetails />} />
+        <Route path="/careers" element={<Careers />} />
       </Routes>
 
       <Footer />

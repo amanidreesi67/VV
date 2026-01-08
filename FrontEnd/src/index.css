@@ -111,3 +111,46 @@
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out forwards;
 }
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Careers Page Pagination Overrides */
+.careers-swiper-pagination .swiper-pagination-bullet {
+  width: 12px !important;
+  height: 12px !important;
+  background-color: #000 !important;
+  border: 1px solid #000 !important;
+  opacity: 1 !important;
+  margin: 0 6px !important;
+  display: inline-block !important;
+  border-radius: 50% !important;
+  transition: all 0.3s ease;
+}
+
+.careers-swiper-pagination .swiper-pagination-bullet-active {
+  background-color: transparent !important;
+  border: 1.5px solid #000 !important;
+  transform: scale(1.1);
+}
+
+/* Remove any global red dots/rings for this specific pagination */
+.careers-swiper-pagination .swiper-pagination-bullet::after,
+.careers-swiper-pagination .swiper-pagination-bullet .autoplay-progress {
+  display: none !important;
+  content: none !important;
+}

@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HeaderNavigation } from "../Navigation/HeaderNavigations";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { FaSearch, FaRegUser, FaRegStar } from "react-icons/fa";
+import { FaSearch, FaRegUser, FaRegStar, FaTimes } from "react-icons/fa";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../Context/CartContext";
 
 function Header() {
   const [show, setShow] = useState(true);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const lastScrollY = useRef(0);
   const navigate = useNavigate();
   const { setIsCartOpen, wishlistItems, cartItems } = useCart();
@@ -40,19 +41,45 @@ function Header() {
         </span>
       </div>
 
-      <div className="flex justify-between w-[1390px] mx-auto py-3">
+      <div className="flex justify-between items-center w-[1390px] mx-auto py-3">
         <div
           className="text-2xl font-bold cursor-pointer"
           onClick={() => navigate("/")}
         >
           UPTOWNIE
         </div>
-        <div className="flex mt-2 gap-4">
-          <FaSearch className="text-[20px] cursor-pointer" />
-          <FaRegUser className="text-[20px] cursor-pointer" />
+
+        {/* Center Search Bar */}
+        {isSearchOpen && (
+          <div className="flex-1 mx-12 animate-fade-in">
+            <div className="relative w-full max-w-xl mx-auto">
+              <input
+                type="text"
+                placeholder="Search for products..."
+                autoFocus
+                className="w-full text-center border-b border-black py-1 focus:outline-none text-gray-800 placeholder-gray-500 bg-transparent text-lg"
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="flex gap-4 items-center">
+          {isSearchOpen ? (
+            <FaTimes
+              className="text-[20px] cursor-pointer hover:text-red-500 transition-colors"
+              onClick={() => setIsSearchOpen(false)}
+            />
+          ) : (
+            <FaSearch
+              className="text-[20px] cursor-pointer hover:text-gray-600 transition-colors"
+              onClick={() => setIsSearchOpen(true)}
+            />
+          )}
+
+          <FaRegUser className="text-[20px] cursor-pointer hover:text-gray-600 transition-colors" />
 
           <div
-            className="relative group cursor-pointer"
+            className="relative group cursor-pointer hover:text-gray-600 transition-colors"
             onClick={() => navigate("/wishlist")}
           >
             <FaRegStar className="text-[20px]" />
@@ -63,7 +90,7 @@ function Header() {
             )}
           </div>
           <div
-            className="relative group cursor-pointer"
+            className="relative group cursor-pointer hover:text-gray-600 transition-colors"
             onClick={() => setIsCartOpen(true)}
           >
             <MdOutlineShoppingBag className="text-[20px]" />
