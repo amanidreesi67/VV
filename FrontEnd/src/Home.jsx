@@ -4,8 +4,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import { useNavigate } from "react-router-dom";
-
-
 import { Autoplay, Pagination } from "swiper/modules";
 import { HeroSectionSwiper } from "./HomeData/HeroSectionImg";
 import homeCollectionData from "./HomeData/homeCollectionData";
