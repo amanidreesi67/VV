@@ -1,4 +1,4 @@
-const homeOptionsData = [
+const HomeOptionsData = [
   {
     id: 1,
     img: "https://uptownie.com/cdn/shop/files/1_3e532f5c-d4b0-4e03-8775-55a3e7501c65_960x.png?v=1762348678",
@@ -25,4 +25,4 @@ const homeOptionsData = [
   },
 ];
 
-export default homeOptionsData;
+export default HomeOptionsData;

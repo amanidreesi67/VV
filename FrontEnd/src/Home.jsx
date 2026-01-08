@@ -3,12 +3,13 @@ import Header from "./Common/Header.jsx";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
+import { useNavigate } from "react-router-dom";
+
 
 import { Autoplay, Pagination } from "swiper/modules";
 import { HeroSectionSwiper } from "./HomeData/HeroSectionImg";
 import homeCollectionData from "./HomeData/homeCollectionData";
-import { useNavigate } from "react-router-dom";
-import homeOptionsData from "./HomeData/homeOptionsData";
+import homeOptionsData from "./HomeData/homeOptionsData.js";
 import getTheLookData from "./HomeData/getTheLookData";
 
 function Home() {
@@ -34,14 +35,14 @@ function Home() {
         }}
         navigation={true}
         modules={[Autoplay, Pagination]}
-        className="w-full h-[1200px]"
+        className="w-full h-300"
       >
         {HeroSectionSwiper.map((data) => (
           <SwiperSlide key={data.id} className="relative">
             <img
               src={data.img}
               alt={data.title}
-              className="w-full h-[1200px] object-cover "
+              className="w-full h-300 object-cover "
             />
           </SwiperSlide>
         ))}
@@ -67,14 +68,14 @@ function Home() {
               <img
                 src={data.img}
                 alt={data.title}
-                className="w-full h-[450px] object-cover  "
+                className="w-full h-112.5 object-cover  "
               />
               <p className="text-center font-bold text-[14px]">{data.title}</p>
             </div>
           ))}
         </div>
       </div>
-      <div className="flex flex-col items-center justify-center bg-[#F9F6F9] h-[570px] mt-4">
+      <div className="flex flex-col items-center justify-center bg-[#F9F6F9] h-142.5 mt-4">
         <p className="text-xl font-bold p-5 uppercase">Get the look</p>
         <Swiper
           spaceBetween={20}
@@ -86,13 +87,13 @@ function Home() {
             disableOnInteraction: false,
           }}
           modules={[Autoplay]}
-          className="h-[450px] w-full "
+          className="h-112.5 w-full "
         >
           {getTheLookData.map((data) => (
             <SwiperSlide key={data.id} className="relative cursor-pointer" onClick={() => Navigate(data.link)}>
               <img
                 src={data.img}
-                className="w-full h-[450px] object-cover rounded-xl overflow-hidden"
+                className="w-full h-112.5 object-cover rounded-xl overflow-hidden"
               />
               <p className="absolute -bottom-px left-0 w-full text-center font-bold text-[14px] uppercase bg-white p-2">
                 Shop Now
