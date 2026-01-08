@@ -57,7 +57,7 @@ function Header() {
                 type="text"
                 placeholder="Search for products..."
                 autoFocus
-                className="w-full text-center border-b border-black py-1 focus:outline-none text-gray-800 placeholder-gray-500 bg-transparent text-lg"
+                className="w-full text-center border border-gray-400 rounded-full py-2 px-6 focus:outline-none focus:border-black text-gray-800 placeholder-gray-500 bg-transparent text-lg transition-colors"
               />
             </div>
           </div>
