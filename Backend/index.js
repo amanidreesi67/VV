@@ -18,5 +18,5 @@ import authRoutes from './routes/auth.route.js';
 app.use("/api", authRoutes);
 
 app.listen(PORT,()=>{
-    console.log("Server running on posrt : PORT");
+    console.log("Server running on port:",PORT);
 })

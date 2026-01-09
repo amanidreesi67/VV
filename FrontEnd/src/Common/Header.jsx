@@ -1,8 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { HeaderNavigation } from "../Navigation/HeaderNavigations";
 import { RiArrowDropDownLine } from "react-icons/ri";
-import { FaSearch, FaRegUser, FaRegStar, FaTimes } from "react-icons/fa";
+import {
+  FaSearch,
+  FaRegUser,
+  FaUser,
+  FaRegStar,
+  FaTimes,
+  FaSpinner,
+} from "react-icons/fa";
 import { MdOutlineShoppingBag } from "react-icons/md";
+import { IoLogOutOutline, IoBagHandleOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../Context/CartContext";
 import AuthModal from "../components/AuthModal/AuthModal";
@@ -11,9 +19,35 @@ function Header() {
   const [show, setShow] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoadingOrders, setIsLoadingOrders] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const lastScrollY = useRef(0);
   const navigate = useNavigate();
   const { setIsCartOpen, wishlistItems, cartItems } = useCart();
+  const menuRef = useRef(null);
+
+  const checkLoginStatus = () => {
+    const token = localStorage.getItem("jwt");
+    setIsLoggedIn(!!token);
+  };
+
+  useEffect(() => {
+    checkLoginStatus();
+  }, []);
+
+  useEffect(() => {
+    // Close menu when clicking outside
+    function handleClickOutside(event) {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const controlNavbar = () => {
@@ -32,15 +66,18 @@ function Header() {
   }, []);
 
   const handleAccountClick = () => {
-    const token = localStorage.getItem("jwt");
-    if (token) {
-      // Navigate to profile or dashboard if logged in
-      // For now, doing nothing or specific route as per previous logic (it was empty/navigation)
-      // Adjust this if there is a specific profile route, e.g. navigate("/profile")
-      // navigate("/profile");
+    if (isLoggedIn) {
+      setShowProfileMenu(!showProfileMenu);
     } else {
       setIsAuthModalOpen(true);
     }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("jwt");
+    setIsLoggedIn(false);
+    setShowProfileMenu(false);
+    // navigate("/"); // Optional: redirect to home
   };
 
   return (
@@ -91,10 +128,54 @@ function Header() {
               />
             )}
 
-            <FaRegUser
-              className="text-[20px] cursor-pointer hover:text-gray-600 transition-colors"
-              onClick={handleAccountClick}
-            />
+            <div className="relative" ref={menuRef}>
+              {isLoggedIn ? (
+                <FaUser
+                  className="text-[20px] cursor-pointer hover:text-gray-600 transition-colors"
+                  onClick={handleAccountClick}
+                />
+              ) : (
+                <FaRegUser
+                  className="text-[20px] cursor-pointer hover:text-gray-600 transition-colors"
+                  onClick={handleAccountClick}
+                />
+              )}
+
+              {/* Profile Dropdown Menu */}
+              {isLoggedIn && showProfileMenu && (
+                <div className="absolute top-full right-0 mt-3 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-fade-in">
+                  <div
+                    className="px-4 py-3 flex items-center justify-between hover:bg-gray-50 cursor-pointer transition-colors"
+                    onClick={() => {
+                      setIsLoadingOrders(true);
+                      setTimeout(() => {
+                        setIsLoadingOrders(false);
+                        navigate("/orders");
+                        setShowProfileMenu(false);
+                      }, 800);
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <IoBagHandleOutline size={20} />
+                      <span className="font-medium text-sm">Order History</span>
+                    </div>
+                    {isLoadingOrders && (
+                      <FaSpinner className="animate-spin text-gray-500" />
+                    )}
+                  </div>
+                  <div className="h-px bg-gray-100 my-1"></div>
+                  <div className="px-4 py-2">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center justify-between px-4 py-2 border border-gray-200 rounded-lg hover:border-black hover:bg-gray-50 transition-all text-sm font-medium"
+                    >
+                      <span>Logout</span>
+                      <IoLogOutOutline size={18} />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
 
             <div
               className="relative group cursor-pointer hover:text-gray-600 transition-colors"
@@ -161,7 +242,10 @@ function Header() {
       </header>
       <AuthModal
         isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
+        onClose={() => {
+          setIsAuthModalOpen(false);
+          checkLoginStatus(); // Re-check login status when modal closes
+        }}
       />
     </>
   );

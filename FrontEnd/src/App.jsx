@@ -22,6 +22,8 @@ import Blog from "./Blog/Blog";
 import BlogDetails from "./Blog/BlogDetails";
 import ScrollToTop from "./ScrollTOTop";
 import Careers from "./Careers/Careers";
+import OrderHistory from "./OrderHistory/OrderHistory";
+import Addresses from "./OrderHistory/Addresses";
 
 function App() {
   return (
@@ -53,6 +55,8 @@ function App() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogDetails />} />
         <Route path="/careers" element={<Careers />} />
+        <Route path="/orders" element={<OrderHistory />} />
+        <Route path="/account/addresses" element={<Addresses />} />
       </Routes>
 
       <Footer />
