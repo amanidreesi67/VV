@@ -1,13 +1,32 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { FiStar, FiPlus } from "react-icons/fi";
+import { useCart } from "../Context/CartContext";
 
-function ProductCard({ product }) {
+function ProductCard({ product, onQuickView }) {
   const navigate = useNavigate();
+  const { addToWishlist, removeFromWishlist, wishlistItems } = useCart();
+
+  const isWishlisted = wishlistItems.some((item) => item.id === product.id);
 
   const firstVariant = product.variants?.[0];
   const basePrice = firstVariant?.basePrice || 0;
   const discount = product.discountedPercent || 0;
   const discountedPrice = Math.round(basePrice - (basePrice * discount) / 100);
+
+  const handleWishlistClick = (e) => {
+    e.stopPropagation();
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
+
+  const handleQuickViewClick = (e) => {
+    e.stopPropagation();
+    onQuickView && onQuickView(product);
+  };
 
   return (
     <div
@@ -37,6 +56,29 @@ function ProductCard({ product }) {
             {product.badge}
           </span>
         )}
+
+        {/* Action Buttons (Wishlist & Quick View) */}
+        <div className="absolute top-3 right-3 flex flex-col gap-2 z-20 translate-x-10 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300 ease-out">
+          <button
+            onClick={handleWishlistClick}
+            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-colors ${
+              isWishlisted
+                ? "bg-black text-white"
+                : "bg-white text-black hover:bg-black hover:text-white"
+            }`}
+            title="Add to Wishlist"
+          >
+            <FiStar size={18} className={isWishlisted ? "fill-current" : ""} />
+          </button>
+          <button
+            onClick={handleQuickViewClick}
+            className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shadow-md hover:bg-black hover:text-white transition-colors"
+            title="Quick View"
+          >
+            <FiPlus size={18} />
+          </button>
+        </div>
+
         {/* Select Options Button */}
         <button className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-[2px] hover:bg-black hover:text-white text-black py-2.5 text-sm font-medium rounded shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-20">
           Select options

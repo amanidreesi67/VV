@@ -301,10 +301,10 @@ function ProductDetails() {
                     }
                   }}
                   className={`p-2 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors ${
-                    isWishlisted ? "text-red-500 fill-red-500" : "text-gray-600"
+                    isWishlisted ? "text-black fill-black" : "text-gray-600"
                   }`}
                 >
-                  <FiHeart
+                  <FiStar
                     size={20}
                     fill={isWishlisted ? "currentColor" : "none"}
                   />

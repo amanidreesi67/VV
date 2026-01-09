@@ -4,12 +4,14 @@ import { FiFilter, FiX } from "react-icons/fi";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import ProductData from "./ProductData.js";
 import ProductCard from "./ProductCard";
+import QuickViewModal from "./QuickViewModal";
 
 function Product() {
   const navigate = useNavigate();
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [sortBy, setSortBy] = useState("Featured");
+  const [quickViewProduct, setQuickViewProduct] = useState(null);
 
   const sortOptions = [
     "Featured",
@@ -22,6 +24,14 @@ function Product() {
 
   return (
     <div className=" min-h-screen bg-white relative p-5">
+      {/* Quick View Modal */}
+      {quickViewProduct && (
+        <QuickViewModal
+          product={quickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
+        />
+      )}
+
       {/* Top Bar */}
       <div className="bg-[#E5E5E5] rounded-2xl sticky top-0 z-30 px-6 py-4 flex items-center justify-between">
         <button
@@ -245,7 +255,11 @@ function Product() {
       <div className="px-6 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {ProductData.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              onQuickView={setQuickViewProduct}
+            />
           ))}
         </div>
       </div>
