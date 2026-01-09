@@ -11,6 +11,7 @@ const Addresses = () => {
     address1: "",
     address2: "",
     city: "",
+    state: "",
     country: "India",
     zip: "",
     phone: "",
@@ -168,6 +169,19 @@ const Addresses = () => {
                     type="text"
                     name="city"
                     value={formData.city}
+                    onChange={handleChange}
+                    required
+                    className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:border-black"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm text-gray-600 mb-1">
+                    State
+                  </label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={formData.state}
                     onChange={handleChange}
                     required
                     className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:border-black"
