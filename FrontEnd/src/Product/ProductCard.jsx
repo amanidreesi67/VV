@@ -3,23 +3,43 @@ import { useNavigate } from "react-router-dom";
 import { FiStar, FiPlus } from "react-icons/fi";
 import { useCart } from "../Context/CartContext";
 
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addItemToWishlist,
+  removeItemFromWishlist,
+} from "../Redux/Auth/action";
+
 function ProductCard({ product, onQuickView }) {
   const navigate = useNavigate();
-  const { addToWishlist, removeFromWishlist, wishlistItems } = useCart();
+  const dispatch = useDispatch();
+  const { addToWishlist: addToLocal } = useCart();
+  const { user } = useSelector((store) => store.auth);
 
-  const isWishlisted = wishlistItems.some((item) => item.id === product.id);
+  const isWishlisted =
+    user &&
+    user.wishlist?.some((item) => {
+      if (!item) return false;
+      // Handle both populated object and ID string/ObjectId
+      const itemId = item._id || item;
+      return itemId.toString() === product._id?.toString();
+    });
 
   const firstVariant = product.variants?.[0];
-  const basePrice = firstVariant?.basePrice || 0;
+  const basePrice = firstVariant?.price || 0;
   const discount = product.discountedPercent || 0;
   const discountedPrice = Math.round(basePrice - (basePrice * discount) / 100);
 
   const handleWishlistClick = (e) => {
     e.stopPropagation();
-    if (isWishlisted) {
-      removeFromWishlist(product.id);
+    if (user) {
+      if (isWishlisted) {
+        dispatch(removeItemFromWishlist(product._id));
+      } else {
+        dispatch(addItemToWishlist(product._id));
+      }
     } else {
-      addToWishlist(product);
+      // If user is not logged in, redirect to login page
+      navigate("/login");
     }
   };
 
@@ -80,7 +100,13 @@ function ProductCard({ product, onQuickView }) {
         </div>
 
         {/* Select Options Button */}
-        <button className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-[2px] hover:bg-black hover:text-white text-black py-2.5 text-sm font-medium rounded shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-20">
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/product/${product.id}`);
+          }}
+          className="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-[2px] hover:bg-black hover:text-white text-black py-2.5 text-sm font-medium rounded shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 z-20"
+        >
           Select options
         </button>
       </div>

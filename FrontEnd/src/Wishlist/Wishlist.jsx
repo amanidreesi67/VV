@@ -1,11 +1,23 @@
-import React from "react";
-import { useCart } from "../Context/CartContext";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import ProductCard from "../Product/ProductCard";
 import { useNavigate } from "react-router-dom";
+import { getUser } from "../Redux/Auth/action";
 
 function Wishlist() {
-  const { wishlistItems } = useCart();
+  const { user } = useSelector((store) => store.auth);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    // Ensure we have the latest user data including wishlist
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      dispatch(getUser(token));
+    }
+  }, [dispatch]);
+
+  const wishlistItems = user?.wishlist || [];
 
   return (
     <div className="min-h-[60vh] py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
@@ -37,9 +49,11 @@ function Wishlist() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {wishlistItems.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
+          {wishlistItems.map((product) =>
+            product ? (
+              <ProductCard key={product.id || product._id} product={product} />
+            ) : null
+          )}
         </div>
       )}
     </div>

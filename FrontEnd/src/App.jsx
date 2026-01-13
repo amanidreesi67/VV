@@ -24,8 +24,22 @@ import ScrollToTop from "./ScrollTOTop";
 import Careers from "./Careers/Careers";
 import OrderHistory from "./OrderHistory/OrderHistory";
 import Addresses from "./OrderHistory/Addresses";
+import Login from "./Pages/Login";
+
+import { useDispatch, useSelector } from "react-redux"; // Import hooks
+import { useEffect } from "react";
+import { getUser } from "./Redux/Auth/action";
 
 function App() {
+  const dispatch = useDispatch();
+  const { token } = useSelector((store) => store.auth);
+
+  useEffect(() => {
+    if (token) {
+      dispatch(getUser(token));
+    }
+  }, [dispatch, token]);
+
   return (
     <CartProvider>
       <FloatingButtons />
@@ -57,6 +71,7 @@ function App() {
         <Route path="/careers" element={<Careers />} />
         <Route path="/orders" element={<OrderHistory />} />
         <Route path="/account/addresses" element={<Addresses />} />
+        <Route path="/login" element={<Login />} />
       </Routes>
 
       <Footer />

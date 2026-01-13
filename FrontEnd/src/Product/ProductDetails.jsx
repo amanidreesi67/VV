@@ -19,11 +19,21 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
-import ProductData from "./ProductData";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  findProductById,
+  findProducts,
+} from "../Redux/Customers/Product/action";
+import {
+  addItemToWishlist,
+  removeItemFromWishlist,
+} from "../Redux/Auth/action";
+import { addItemToCart } from "../Redux/Customers/Cart/Action";
 import ProductCard from "./ProductCard";
 import { useCart } from "../Context/CartContext";
 
 const AccordionItem = ({ title, isOpen, onToggle, children }) => (
+  // ... existing code ...
   <div className="border-b border-gray-200">
     <button
       onClick={onToggle}
@@ -54,7 +64,7 @@ function ProductDetails() {
   const { productId } = useParams();
   const navigate = useNavigate();
   const swiperRef = useRef(null);
-  const [product, setProduct] = useState(null);
+  // product is from Redux
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [selectedImage, setSelectedImage] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
@@ -63,33 +73,56 @@ function ProductDetails() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSizeChartOpen, setIsSizeChartOpen] = useState(false);
   const recommendedSwiperRef = useRef(null);
-  const { addToCart, addToWishlist, wishlistItems, removeFromWishlist } =
-    useCart();
+  const { setIsCartOpen } = useCart(); // Keep for opening drawer
 
-  const isWishlisted = wishlistItems.some((item) => item.id === product?.id);
+  const dispatch = useDispatch();
+  const { product, products, loading } = useSelector((store) => store.product);
+  const { user } = useSelector((store) => store.auth);
+
+  const isWishlisted =
+    user &&
+    user.wishlist?.some((item) => {
+      if (!item) return false;
+      const itemId = item._id || item;
+      const productId = product?._id;
+      return itemId.toString() === productId?.toString();
+    });
 
   useEffect(() => {
-    // Find product by ID
-    const foundProduct = ProductData.find((p) => p.id === parseInt(productId));
-    if (foundProduct) {
-      setProduct(foundProduct);
-      if (foundProduct.variants && foundProduct.variants.length > 0) {
-        const defaultVariant = foundProduct.variants[0];
+    if (productId) {
+      dispatch(findProductById({ productId }));
+    }
+  }, [productId, dispatch]);
+
+  useEffect(() => {
+    if (product) {
+      // Fetch recommendations or verify current product structure
+      if (product.variants && product.variants.length > 0) {
+        const defaultVariant = product.variants[0];
         setSelectedVariant(defaultVariant);
         setSelectedImage(defaultVariant.images[0]);
         // Set default size if available in stock
-        const sizes = Object.keys(defaultVariant.stock);
+        // Check if stock is map or object
+        const sizes =
+          product.variants[0].stock instanceof Map
+            ? Array.from(product.variants[0].stock.keys())
+            : Object.keys(product.variants[0].stock || {});
+
         if (sizes.length > 0) setSelectedSize(sizes[0]);
       }
+
+      // Fetch similar products for recommendations
+      dispatch(findProducts({ category: product.category }));
     }
-  }, [productId]);
+  }, [product, dispatch]);
 
   const handleColorChange = (variant) => {
     setSelectedVariant(variant);
     setSelectedImage(variant.images[0]);
-    // Reset size when color changes, or try to keep same size?
-    // Let's reset to first available size
-    const sizes = Object.keys(variant.stock);
+    const sizes =
+      variant.stock instanceof Map
+        ? Array.from(variant.stock.keys())
+        : Object.keys(variant.stock || {});
     if (sizes.length > 0) setSelectedSize(sizes[0]);
   };
 
@@ -114,7 +147,7 @@ function ProductDetails() {
   };
 
   // Calculate price based on variant and discount
-  const price = selectedVariant.basePrice;
+  const price = selectedVariant.price;
   const discountPercent = product.discountedPercent || 0;
   const discountedPrice = Math.round(price - (price * discountPercent) / 100);
 
@@ -179,7 +212,7 @@ function ProductDetails() {
                 modules={[Navigation]}
                 spaceBetween={0}
                 slidesPerView={1}
-                loop={true}
+                loop={selectedVariant.images.length > 1}
                 onBeforeInit={(swiper) => {
                   swiperRef.current = swiper;
                 }}
@@ -294,10 +327,14 @@ function ProductDetails() {
               <div className="flex gap-2">
                 <button
                   onClick={() => {
-                    if (isWishlisted) {
-                      removeFromWishlist(product.id);
+                    if (user) {
+                      if (isWishlisted) {
+                        dispatch(removeItemFromWishlist(product._id));
+                      } else {
+                        dispatch(addItemToWishlist(product._id));
+                      }
                     } else {
-                      addToWishlist(product);
+                      navigate("/login");
                     }
                   }}
                   className={`p-2 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors ${
@@ -346,19 +383,23 @@ function ProductDetails() {
                 Size: <span className="font-normal">{selectedSize}</span>
               </p>
               <div className="flex flex-wrap gap-3">
-                {Object.keys(selectedVariant.stock).map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`min-w-12 h-12 flex items-center justify-center border font-medium transition-all duration-200 ${
-                      selectedSize === size
-                        ? "border-black bg-black text-white"
-                        : "border-gray-200 hover:border-black text-gray-900"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+                {selectedVariant &&
+                  (selectedVariant.stock instanceof Map
+                    ? Array.from(selectedVariant.stock.keys())
+                    : Object.keys(selectedVariant.stock || {})
+                  ).map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`min-w-12 h-12 flex items-center justify-center border font-medium transition-all duration-200 ${
+                        selectedSize === size
+                          ? "border-black bg-black text-white"
+                          : "border-gray-200 hover:border-black text-gray-900"
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
               </div>
             </div>
 
@@ -412,14 +453,20 @@ function ProductDetails() {
 
                 <div className="flex flex-col sm:flex-row gap-4 items-center flex-1">
                   <button
-                    onClick={() =>
-                      addToCart(
-                        product,
-                        selectedVariant,
-                        selectedSize,
-                        quantity
-                      )
-                    }
+                    onClick={() => {
+                      if (user) {
+                        const data = {
+                          productId: product?._id,
+                          size: selectedSize,
+                          quantity: quantity,
+                          variant: selectedVariant,
+                        };
+                        dispatch(addItemToCart(data));
+                        setIsCartOpen(true);
+                      } else {
+                        navigate("/login");
+                      }
+                    }}
                     className="w-full px-8 py-4 bg-black text-white text-sm font-bold tracking-wide hover:bg-gray-800 transition-colors uppercase"
                   >
                     ADD TO BAG
@@ -451,27 +498,27 @@ function ProductDetails() {
                       <span className="font-semibold text-gray-700">
                         Fabric-
                       </span>{" "}
-                      {product.details.fabric}
+                      {product.details?.fabric}
                     </li>
                     <li>
                       <span className="font-semibold text-gray-700">Fit-</span>{" "}
-                      {product.details.fit}
+                      {product.details?.fit}
                     </li>
                     <li>
                       <span className="font-semibold text-gray-700">Neck-</span>{" "}
-                      {product.details.neck}
+                      {product.details?.neck}
                     </li>
                     <li>
                       <span className="font-semibold text-gray-700">
                         Sleeve-
                       </span>{" "}
-                      {product.details.sleeve}
+                      {product.details?.sleeve}
                     </li>
                     <li>
                       <span className="font-semibold text-gray-700">
                         Length-
                       </span>{" "}
-                      {product.details.length}
+                      {product.details?.length}
                     </li>
                     <li>
                       <span className="font-semibold text-gray-700">
@@ -567,11 +614,13 @@ function ProductDetails() {
             }}
             className="w-full py-4 px-2"
           >
-            {ProductData.filter((p) => p.id !== product.id).map((item) => (
-              <SwiperSlide key={item.id}>
-                <ProductCard product={item} />
-              </SwiperSlide>
-            ))}
+            {products?.content
+              ?.filter((p) => p.id !== product?.id)
+              .map((item) => (
+                <SwiperSlide key={item._id || item.id}>
+                  <ProductCard product={item} />
+                </SwiperSlide>
+              ))}
           </Swiper>
 
           {/* Custom Navigation Buttons for Recommended Section */}

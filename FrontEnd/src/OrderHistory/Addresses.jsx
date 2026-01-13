@@ -1,22 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addAddress,
+  getUserAddresses,
+  deleteAddress,
+  updateAddress,
+} from "../Redux/Auth/action";
 
 const Addresses = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { user } = useSelector((store) => store.auth);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
     company: "",
-    address1: "",
+    streetAddress: "",
     address2: "",
     city: "",
     state: "",
     country: "India",
-    zip: "",
-    phone: "",
+    zipCode: "",
+    mobile: "",
     isDefault: false,
   });
+
+  useEffect(() => {
+    dispatch(getUserAddresses());
+  }, [dispatch]);
 
   const handleLogout = () => {
     localStorage.removeItem("jwt");
@@ -33,11 +48,82 @@ const Addresses = () => {
     }));
   };
 
+  const handleEdit = (address) => {
+    setFormData({
+      firstName: address.firstName || "",
+      lastName: address.lastName || "",
+      company: address.company || "",
+      streetAddress: address.streetAddress || "",
+      address2: address.address2 || "",
+      city: address.city || "",
+      state: address.state || "",
+      country: address.country || "India",
+      zipCode: address.zipCode || "",
+      mobile: address.mobile || "",
+      isDefault: address.isDefault || false,
+    });
+    setEditingId(address._id);
+    setShowForm(true);
+  };
+
+  const handleDelete = (addressId) => {
+    if (window.confirm("Are you sure you want to delete this address?")) {
+      dispatch(deleteAddress(addressId))
+        .then(() => alert("Address deleted successfully"))
+        .catch((err) => alert("Failed to delete address: " + err));
+    }
+  };
+
+  const handleSetDefault = (address) => {
+    dispatch(updateAddress(address._id, { ...address, isDefault: true }))
+      .then(() => alert("Default address updated successfully"))
+      .catch((err) => alert("Failed to update default address: " + err));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Address Submitted:", formData);
-    alert("Address added successfully (Logic pending backend integration)");
-    setShowForm(false);
+    if (editingId) {
+      dispatch(updateAddress(editingId, formData))
+        .then(() => {
+          alert("Address updated successfully");
+          setShowForm(false);
+          setEditingId(null);
+          setFormData({
+            firstName: "",
+            lastName: "",
+            company: "",
+            streetAddress: "",
+            address2: "",
+            city: "",
+            state: "",
+            country: "India",
+            zipCode: "",
+            mobile: "",
+            isDefault: false,
+          });
+        })
+        .catch((err) => alert("Failed to update address: " + err));
+    } else {
+      dispatch(addAddress(formData))
+        .then(() => {
+          alert("Address added successfully");
+          setShowForm(false);
+          setFormData({
+            firstName: "",
+            lastName: "",
+            company: "",
+            streetAddress: "",
+            address2: "",
+            city: "",
+            state: "",
+            country: "India",
+            zipCode: "",
+            mobile: "",
+            isDefault: false,
+          });
+        })
+        .catch((err) => alert("Failed to add address: " + err));
+    }
   };
 
   return (
@@ -82,18 +168,81 @@ const Addresses = () => {
 
         {/* Main Content */}
         <div className="flex-1">
-          <h2 className="text-2xl font-serif mb-6">Your Addresses (0)</h2>
+          <h2 className="text-2xl font-serif mb-6">
+            Your Addresses ({user?.addresses?.length || 0})
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            {user?.addresses?.map((address, index) => (
+              <div key={index} className="border p-4 rounded relative group">
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
+                  <button
+                    onClick={() => handleEdit(address)}
+                    className="text-blue-600 text-sm hover:underline"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(address._id)}
+                    className="text-red-600 text-sm hover:underline"
+                  >
+                    Delete
+                  </button>
+                </div>
+                <p className="font-bold">
+                  {address.firstName} {address.lastName}
+                </p>
+                <p>{address.streetAddress}</p>
+                {address.address2 && <p>{address.address2}</p>}
+                <p>
+                  {address.city}, {address.state} {address.zipCode}
+                </p>
+                <p>{address.country}</p>
+                <p>Mobile: {address.mobile}</p>
+                {address.isDefault ? (
+                  <span className="bg-gray-200 text-xs px-2 py-1 rounded mt-2 inline-block">
+                    Default
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => handleSetDefault(address)}
+                    className="mt-2 text-sm text-gray-500 hover:text-black underline block"
+                  >
+                    Set as default
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
 
           {!showForm ? (
             <button
-              onClick={() => setShowForm(true)}
+              onClick={() => {
+                setShowForm(true);
+                setEditingId(null);
+                setFormData({
+                  firstName: "",
+                  lastName: "",
+                  company: "",
+                  streetAddress: "",
+                  address2: "",
+                  city: "",
+                  state: "",
+                  country: "India",
+                  zipCode: "",
+                  mobile: "",
+                  isDefault: false,
+                });
+              }}
               className="bg-black text-white px-8 py-3 font-bold text-sm tracking-wide hover:opacity-90 transition-opacity"
             >
               Add a New Address
             </button>
           ) : (
             <div className="bg-gray-50 p-6 rounded-lg max-w-3xl">
-              <h3 className="text-xl font-medium mb-6">Add a New Address</h3>
+              <h3 className="text-xl font-medium mb-6">
+                {editingId ? "Edit Address" : "Add a New Address"}
+              </h3>
               <form
                 onSubmit={handleSubmit}
                 className="grid grid-cols-1 md:grid-cols-2 gap-6"
@@ -142,8 +291,8 @@ const Addresses = () => {
                   </label>
                   <input
                     type="text"
-                    name="address1"
-                    value={formData.address1}
+                    name="streetAddress"
+                    value={formData.streetAddress}
                     onChange={handleChange}
                     required
                     className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:border-black"
@@ -206,8 +355,8 @@ const Addresses = () => {
                   </label>
                   <input
                     type="text"
-                    name="zip"
-                    value={formData.zip}
+                    name="zipCode"
+                    value={formData.zipCode}
                     onChange={handleChange}
                     required
                     className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:border-black"
@@ -219,8 +368,8 @@ const Addresses = () => {
                   </label>
                   <input
                     type="tel"
-                    name="phone"
-                    value={formData.phone}
+                    name="mobile"
+                    value={formData.mobile}
                     onChange={handleChange}
                     required
                     className="w-full border border-gray-300 px-4 py-2 rounded focus:outline-none focus:border-black"
@@ -228,19 +377,18 @@ const Addresses = () => {
                 </div>
 
                 <div className="md:col-span-2 flex items-center gap-2 mt-2">
-                  <input
-                    type="checkbox"
-                    id="isDefault"
-                    name="isDefault"
-                    checked={formData.isDefault}
-                    onChange={handleChange}
-                    className="w-4 h-4 text-black border-gray-300 rounded focus:ring-black"
-                  />
-                  <label
-                    htmlFor="isDefault"
-                    className="text-sm text-gray-700 cursor-pointer"
-                  >
-                    Set as default address
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="isDefault"
+                      checked={formData.isDefault}
+                      onChange={handleChange}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-black/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+                    <span className="ml-3 text-sm font-medium text-gray-700">
+                      Set as default address
+                    </span>
                   </label>
                 </div>
 
@@ -249,7 +397,7 @@ const Addresses = () => {
                     type="submit"
                     className="bg-black text-white px-6 py-2 rounded font-bold hover:opacity-90"
                   >
-                    Add Address
+                    {editingId ? "Update Address" : "Add Address"}
                   </button>
                   <button
                     type="button"

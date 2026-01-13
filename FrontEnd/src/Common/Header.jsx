@@ -15,26 +15,25 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../Context/CartContext";
 import AuthModal from "../components/AuthModal/AuthModal";
 
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../Redux/Auth/action";
+
 function Header() {
   const [show, setShow] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const lastScrollY = useRef(0);
   const navigate = useNavigate();
-  const { setIsCartOpen, wishlistItems, cartItems } = useCart();
+  const { setIsCartOpen } = useCart();
   const menuRef = useRef(null);
 
-  const checkLoginStatus = () => {
-    const token = localStorage.getItem("jwt");
-    setIsLoggedIn(!!token);
-  };
-
-  useEffect(() => {
-    checkLoginStatus();
-  }, []);
+  const dispatch = useDispatch();
+  const { user, token } = useSelector((store) => store.auth);
+  const { cartItems } = useSelector((store) => store.cart);
+  const isLoggedIn = !!token;
+  const wishlistCount = user?.wishlist?.length || 0;
 
   useEffect(() => {
     // Close menu when clicking outside
@@ -74,10 +73,9 @@ function Header() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("jwt");
-    setIsLoggedIn(false);
+    dispatch(logout());
     setShowProfileMenu(false);
-    // navigate("/"); // Optional: redirect to home
+    navigate("/");
   };
 
   return (
@@ -182,9 +180,9 @@ function Header() {
               onClick={() => navigate("/wishlist")}
             >
               <FaRegStar className="text-[20px]" />
-              {wishlistItems.length > 0 && (
+              {wishlistCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
-                  {wishlistItems.length}
+                  {wishlistCount}
                 </span>
               )}
             </div>

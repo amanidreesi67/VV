@@ -1,26 +1,110 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { FiFilter, FiX } from "react-icons/fi";
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
-import ProductData from "./ProductData.js";
+import { findProducts } from "../Redux/Customers/Product/action";
 import ProductCard from "./ProductCard";
 import QuickViewModal from "./QuickViewModal";
 
 function Product() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { levelOne, levelTwo, LevelThree } = useParams();
+  const dispatch = useDispatch();
+  const { products } = useSelector((store) => store.product);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
-  const [sortBy, setSortBy] = useState("Featured");
   const [quickViewProduct, setQuickViewProduct] = useState(null);
 
+  const decodedQueryString = decodeURIComponent(location.search);
+  const searchParams = new URLSearchParams(decodedQueryString);
+  const colorValue = searchParams.get("colors");
+  const priceValue = searchParams.get("price");
+  const discount = searchParams.get("minDiscount");
+  const sortValue = searchParams.get("sort");
+  const pageNumber = searchParams.get("pageNumber") || 1;
+  const stock = searchParams.get("stock");
+
+  // Get Sort Option Label
+  const getSortLabel = () => {
+    if (sortValue === "price_low") return "Price, low to high";
+    if (sortValue === "price_high") return "Price, high to low";
+    if (sortValue === "newest") return "Date, new to old";
+    return "Featured";
+  };
+
+  const [sortBy, setSortBy] = useState(getSortLabel());
+
   const sortOptions = [
-    "Featured",
-    "Best selling",
-    "Price, low to high",
-    "Price, high to low",
-    "Date, old to new",
-    "Date, new to old",
+    { label: "Featured", value: "" },
+    { label: "Price, low to high", value: "price_low" },
+    { label: "Price, high to low", value: "price_high" },
+    { label: "Date, new to old", value: "newest" },
   ];
+
+  const handleFilter = (value, sectionId) => {
+    const searchParams = new URLSearchParams(location.search);
+    let filterValue = searchParams.getAll(sectionId);
+
+    if (filterValue.length > 0 && filterValue[0].split(",").includes(value)) {
+      filterValue = filterValue[0].split(",").filter((item) => item !== value);
+      if (filterValue.length === 0) {
+        searchParams.delete(sectionId);
+      } else {
+        searchParams.set(sectionId, filterValue.join(","));
+      }
+    } else {
+      filterValue.push(value);
+      searchParams.set(sectionId, filterValue.join(","));
+    }
+    const query = searchParams.toString();
+    navigate({ search: `?${query}` });
+  };
+
+  // Handle Price and Radio Filters (Single Select logic for some, but here we treat as checklist or ranges)
+  const handleRadioFilterChange = (e, sectionId) => {
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set(sectionId, e.target.value);
+    const query = searchParams.toString();
+    navigate({ search: `?${query}` });
+  };
+
+  useEffect(() => {
+    const [minPrice, maxPrice] =
+      priceValue === null ? [0, 100000] : priceValue.split("-").map(Number);
+
+    // Parse category from URL
+    const queryCategory = searchParams.get("category");
+    const paramCategory = LevelThree || levelTwo || levelOne || "";
+    // Priority: Query Param > Path Param
+    const categoryToUse = queryCategory || paramCategory;
+
+    const data = {
+      category: categoryToUse,
+      colors: colorValue || [],
+      sizes: searchParams.get("size") || [],
+      minPrice,
+      maxPrice,
+      minDiscount: discount || 0,
+      sort: sortValue || "price_low",
+      pageNumber: pageNumber - 1,
+      pageSize: 12,
+      stock: stock,
+    };
+    dispatch(findProducts(data));
+  }, [
+    levelOne,
+    levelTwo,
+    LevelThree,
+    colorValue,
+    priceValue,
+    discount,
+    sortValue,
+    pageNumber,
+    stock,
+    location.search, // Re-run on any URL change
+  ]);
 
   return (
     <div className=" min-h-screen bg-white relative p-5">
@@ -58,18 +142,22 @@ function Product() {
             <div className="absolute right-0 top-full mt-2 w-48 bg-[#E5E5E5]/90 backdrop-blur-sm shadow-lg rounded-md overflow-hidden z-30 py-2">
               {sortOptions.map((option) => (
                 <button
-                  key={option}
+                  key={option.label}
                   onClick={() => {
-                    setSortBy(option);
+                    setSortBy(option.label);
                     setIsSortOpen(false);
+                    // Update URL params
+                    const searchParams = new URLSearchParams(location.search);
+                    searchParams.set("sort", option.value);
+                    navigate({ search: `?${searchParams.toString()}` });
                   }}
                   className={`w-full text-left px-4 py-2 text-sm hover:bg-white/50 transition-colors ${
-                    sortBy === option
+                    sortBy === option.label
                       ? "text-black font-medium"
                       : "text-gray-500"
                   }`}
                 >
-                  {option}
+                  {option.label}
                 </button>
               ))}
             </div>
@@ -113,44 +201,55 @@ function Product() {
               </div>
               <div className="space-y-3 max-h-[280px] overflow-y-auto p-2 pr-2 custom-scrollbar">
                 {[
-                  { name: "Beige", count: 14, color: "#F5F5DC" },
-                  { name: "Black", count: 70, color: "#000000" },
-                  { name: "Blue", count: 33, color: "#3B82F6" },
-                  { name: "Brown", count: 7, color: "#A52A2A" },
-                  { name: "Green", count: 11, color: "#22C55E" },
-                  { name: "Grey", count: 4, color: "#808080" },
-                  { name: "Maroon", count: 5, color: "#800000" },
-                  { name: "Multi", count: 3, type: "multi" },
-                  { name: "Mustard", count: 3, color: "#FFDB58" },
-                  { name: "Orange", count: 3, color: "#FFA500" },
-                  { name: "Pink", count: 3, color: "#FFC0CB" },
-                  { name: "Purple", count: 3, color: "#800080" },
-                  { name: "Red", count: 12, color: "#FF0000" },
-                  { name: "White", count: 12, color: "#FFFFFF" },
-                  { name: "Yellow", count: 12, color: "#FFFF00" },
+                  { name: "Beige", color: "#F5F5DC" },
+                  { name: "Black", color: "#000000" },
+                  { name: "Blue", color: "#3B82F6" },
+                  { name: "Brown", color: "#A52A2A" },
+                  { name: "Green", color: "#22C55E" },
+                  { name: "Grey", color: "#808080" },
+                  { name: "Maroon", color: "#800000" },
+                  { name: "Multi", type: "multi" },
+                  { name: "Mustard", color: "#FFDB58" },
+                  { name: "Orange", color: "#FFA500" },
+                  { name: "Pink", color: "#FFC0CB" },
+                  { name: "Purple", color: "#800080" },
+                  { name: "Red", color: "#FF0000" },
+                  { name: "White", color: "#FFFFFF" },
+                  { name: "Yellow", color: "#FFFF00" },
                 ].map((item) => (
                   <div
                     key={item.name}
+                    onClick={() => handleFilter(item.name, "colors")}
                     className="flex items-center gap-3 group cursor-pointer"
                   >
                     <div className="relative group/swatch">
                       {item.type === "multi" ? (
-                        <div className="w-6 h-6 rounded-full bg-linear-to-r from-yellow-400 via-red-500 to-blue-500 shadow-sm border border-gray-300 transition-all group-hover/swatch:ring-1 group-hover/swatch:ring-offset-2 group-hover/swatch:ring-gray-400"></div>
+                        <div
+                          className={`w-6 h-6 rounded-full bg-linear-to-r from-yellow-400 via-red-500 to-blue-500 shadow-sm border border-gray-300 transition-all ${
+                            colorValue?.includes(item.name)
+                              ? "ring-2 ring-black"
+                              : ""
+                          }`}
+                        ></div>
                       ) : (
                         <div
-                          className="w-6 h-6 rounded-full shadow-sm border border-gray-300 transition-all group-hover/swatch:ring-1 group-hover/swatch:ring-offset-2 group-hover/swatch:ring-gray-400"
+                          className={`w-6 h-6 rounded-full shadow-sm border border-gray-300 transition-all ${
+                            colorValue?.includes(item.name)
+                              ? "ring-2 ring-black"
+                              : ""
+                          }`}
                           style={{ backgroundColor: item.color }}
                         ></div>
                       )}
-                      {/* Tooltip */}
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-black text-white text-[10px] rounded opacity-0 group-hover/swatch:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
-                        {item.name}
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-black"></div>
-                      </div>
                     </div>
-                    <span className="text-gray-600 text-[15px] group-hover:text-black">
-                      {item.name}{" "}
-                      <span className="text-gray-400">({item.count})</span>
+                    <span
+                      className={`text-[15px] group-hover:text-black ${
+                        colorValue?.includes(item.name)
+                          ? "font-bold"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {item.name}
                     </span>
                   </div>
                 ))}
@@ -165,22 +264,31 @@ function Product() {
               </div>
               <div className="space-y-3">
                 {[
-                  { label: "₹500 - ₹1000", count: 108 },
-                  { label: "₹1000 - ₹1500", count: 41 },
-                  { label: "₹1500 - ₹2000", count: 77 },
-                  { label: "More than ₹2000", count: 85 },
+                  { label: "₹500 - ₹1000", value: "500-1000" },
+                  { label: "₹1000 - ₹1500", value: "1000-1500" },
+                  { label: "₹1500 - ₹2000", value: "1500-2000" },
+                  { label: "More than ₹2000", value: "2000-100000" },
                 ].map((item) => (
                   <label
-                    key={item.label}
+                    key={item.value}
                     className="flex items-center gap-3 cursor-pointer group"
                   >
                     <input
-                      type="checkbox"
+                      type="radio"
+                      name="price"
+                      value={item.value}
+                      onChange={(e) => handleRadioFilterChange(e, "price")}
+                      checked={priceValue === item.value}
                       className="w-5 h-5 border-gray-400 rounded bg-transparent checked:bg-black checked:border-black"
                     />
-                    <span className="text-gray-600 text-[15px] group-hover:text-black">
-                      {item.label}{" "}
-                      <span className="text-gray-400">({item.count})</span>
+                    <span
+                      className={`text-[15px] group-hover:text-black ${
+                        priceValue === item.value
+                          ? "text-black font-medium"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {item.label}
                     </span>
                   </label>
                 ))}
@@ -195,12 +303,14 @@ function Product() {
               </div>
               <div className="space-y-3">
                 {[
-                  { label: "Bottoms", count: 19 },
-                  { label: "Dresses", count: 100 },
-                  { label: "Jumpsuits", count: 3 },
-                  { label: "Maxi Dress", count: 29 },
-                  { label: "Skirts", count: 22 },
-                  { label: "Tops", count: 157 },
+                  { label: "Bottoms", value: "Bottoms" }, // Ensure values match DB strings (case sensitive often)
+                  { label: "Dresses", value: "Dresses" },
+                  { label: "Jumpsuits", value: "Jumpsuits" },
+                  { label: "Maxi Dress", value: "maxi-dress" }, // Guessing value
+                  { label: "Skirts", value: "Skirts" },
+                  { label: "Tops", value: "Tops" },
+                  { label: "Men", value: "Men" },
+                  { label: "Women", value: "Women" },
                 ].map((item) => (
                   <label
                     key={item.label}
@@ -208,11 +318,25 @@ function Product() {
                   >
                     <input
                       type="checkbox"
+                      value={item.value}
+                      onChange={() => handleFilter(item.value, "category")}
+                      checked={searchParams
+                        .getAll("category")
+                        .join(",")
+                        .includes(item.value)}
                       className="w-5 h-5 border-gray-400 rounded bg-transparent checked:bg-black checked:border-black"
                     />
-                    <span className="text-gray-600 text-[15px] group-hover:text-black">
-                      {item.label}{" "}
-                      <span className="text-gray-400">({item.count})</span>
+                    <span
+                      className={`text-[15px] group-hover:text-black ${
+                        searchParams
+                          .getAll("category")
+                          .join(",")
+                          .includes(item.value)
+                          ? "text-black font-medium"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {item.label}
                     </span>
                   </label>
                 ))}
@@ -227,21 +351,32 @@ function Product() {
               </div>
               <div className="space-y-3 pb-8">
                 {[
-                  { label: "Up to 10%", count: 4 },
-                  { label: "20 - 40%", count: 24 },
-                  { label: "40% and above", count: 274 },
+                  { label: "Up to 10%", value: "10" },
+                  { label: "20% and above", value: "20" }, // Adjusted label
+                  { label: "40% and above", value: "40" },
                 ].map((item) => (
                   <label
                     key={item.label}
                     className="flex items-center gap-3 cursor-pointer group"
                   >
                     <input
-                      type="checkbox"
+                      type="radio"
+                      name="minDiscount"
+                      value={item.value}
+                      onChange={(e) =>
+                        handleRadioFilterChange(e, "minDiscount")
+                      }
+                      checked={discount === item.value}
                       className="w-5 h-5 border-gray-400 rounded bg-transparent checked:bg-black checked:border-black"
                     />
-                    <span className="text-gray-600 text-[15px] group-hover:text-black">
-                      {item.label}{" "}
-                      <span className="text-gray-400">({item.count})</span>
+                    <span
+                      className={`text-[15px] group-hover:text-black ${
+                        discount === item.value
+                          ? "text-black font-medium"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {item.label}
                     </span>
                   </label>
                 ))}
@@ -254,9 +389,9 @@ function Product() {
       {/* Main Content Area */}
       <div className="px-6 py-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {ProductData.map((product) => (
+          {products?.content?.map((product) => (
             <ProductCard
-              key={product.id}
+              key={product._id || product.id}
               product={product}
               onQuickView={setQuickViewProduct}
             />

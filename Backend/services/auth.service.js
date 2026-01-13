@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 
 export const registerUser = async (userData) => {
   try {
-    const { firstName, lastName, email, password, role } = userData; // get user details from userData
+    const { firstName, lastName, email, password, role } = userData;
     const emailExist = await User.findOne({ email });
     if (emailExist) {
       throw new Error("User already exist with this email..", email);
@@ -27,8 +27,7 @@ export const getUserByEmail = async (email) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      // throw new Error("User Does Not Exists With This Email", email);
-      return null; // Should return null if not found so controller can handle "not registered" message
+      return null;
     }
     return user;
   } catch (err) {
