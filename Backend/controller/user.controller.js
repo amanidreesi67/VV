@@ -112,3 +112,15 @@ export const getUserProfile = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const result = await userService.getAllUsers(page, limit);
+    res.status(200).json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

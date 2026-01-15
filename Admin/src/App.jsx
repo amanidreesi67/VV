@@ -11,10 +11,20 @@ import Coupan from "./Coupan/Coupan";
 import Queries from "./Pages/Queries";
 import ProductDetails from "./Pages/ProductDetails";
 
+import AdminLogin from "./Pages/AdminLogin";
+import AdminPrivateRoute from "./routers/AdminPrivateRoute";
+
 const App = () => {
   return (
     <Routes>
-      <Route element={<AdminLayout />}>
+      <Route path="/login" element={<AdminLogin />} />
+      <Route
+        element={
+          <AdminPrivateRoute>
+            <AdminLayout />
+          </AdminPrivateRoute>
+        }
+      >
         <Route path="/" element={<Dashboard />} />
         <Route path="/products" element={<Products />} />
         <Route path="/customers" element={<Customers />} />

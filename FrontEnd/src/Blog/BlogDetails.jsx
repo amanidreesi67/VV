@@ -11,104 +11,57 @@ import {
 const BlogDetails = () => {
   const { id } = useParams();
 
+  const [blog, setBlog] = React.useState(null);
+  const [relatedArticles, setRelatedArticles] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  const API_BASE_URL =
+    import.meta.env.VITE_React_BASE_API_URL || "http://localhost:5000";
+
+  /* State for selected image gallery */
+  const [selectedImage, setSelectedImage] = React.useState("");
+
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchBlogDetails();
+    fetchRelatedArticles();
   }, [id]);
 
-  // Mock data for the specific blog post (ID 1)
-  const blogPost = {
-    id: 1,
-    title: "5 Outfit Tricks That Make You Look Taller (No Heels Needed)",
-    author: "SHIVANI AGARWAL",
-    date: "Nov 06, 2025",
-    content: [
-      {
-        type: "intro",
-        text: "Looking taller isn’t just about heels - it’s about smart styling. Whether you’re 5’0 or 5’7, these simple outfit tweaks can elongate your frame, balance proportions, and make you look effortlessly put-together (without ever reaching for stilettos).",
-      },
-      {
-        type: "section",
-        title: "1. Go Monochrome - One Shade, Endless Length",
-        text: "Wearing a single colour head-to-toe creates an uninterrupted visual line that instantly adds height. Try Uptownie’s co-ord sets in pastel shades or earthy tones - they’re already perfectly matched, so you don’t have to overthink pairing. Bonus: they photograph beautifully.",
-        shopLink: "Shop: Co-ord Sets",
-        shopUrl: "/pdt/co-ord-sets",
-      },
-      {
-        type: "section",
-        title: "2. High-Waist Everything",
-        text: "High-waist skirts or pants visually stretch your legs by starting higher up. Pair a high-waist skirt with a cropped or tucked-in top - Uptownie’s cotton and crepe skirts are light, structured and just right for work or brunch.",
-        shopLink: "Shop: Skirts",
-        shopUrl: "/pdt/women-skirts",
-      },
-      {
-        type: "section",
-        title: "3. Keep It Cropped (Tops, Not Jeans!)",
-        text: "Cropped tops or shirts that hit right at your waistline make your legs look longer. Our cropped shirts and peplum tops are tailored to highlight your natural waist without showing too much skin - perfect for that taller, sleeker silhouette.",
-        shopLink: "Shop: Tops & Shirts",
-        shopUrl: "/pdt/women-tops",
-      },
-      {
-        type: "section",
-        title: "4. Vertical Prints & Streamlined Silhouettes",
-        text: "Avoid wide horizontal prints - they cut your height visually. Instead, choose vertical stripes, button-downs, or sleek A-line dresses. Uptownie’s printed shirt dresses and flowy midis are designed to elongate your frame while keeping things comfy.",
-        shopLink: "Shop: Dresses",
-        shopUrl: "/pdt/women-dresses",
-      },
-      {
-        type: "section",
-        title: "5. Smart Layering with Shrugs & Jackets",
-        text: "Long shrugs or structured jackets create clean lines that lengthen your look. Our cotton shrugs and overlay jackets are lightweight, breezy, and ideal for layering during transitional weather - they add polish without bulk.",
-        shopLink: "Shop: Shrugs & Jackets",
-        shopUrl: "/pdt/shrugs",
-      },
-    ],
-    tips: "When in doubt, tuck it in, belt it up, and keep proportions balanced. You’ll be surprised how these tiny styling tweaks can make you look taller and more confident - heels or no heels.",
-    products: [
-      { name: "Cotton Shorts and Shirt Set", url: "#" },
-      { name: "Collar Buttoned Down Printed Shirt Maxi Dress", url: "#" },
-      { name: "Cotton Sequinned Midi Dress", url: "#" },
-      { name: "Printed Cotton Stretchable Draped Crop Top", url: "#" },
-    ],
-    tags: [
-      "everyday fashion",
-      "flattering outfits",
-      "genz fashion",
-      "global trend",
-      "Outfit Ideas",
-      "outfittricks",
-      "Style Guide",
-      "uptowniefashion",
-    ],
+  const fetchBlogDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_BASE_URL}/api/blogs/${id}`);
+      if (!response.ok) throw new Error("Blog not found");
+      const data = await response.json();
+      setBlog(data);
+      // Initialize selected image with the first image
+      if (data.images && data.images.length > 0) {
+        setSelectedImage(data.images[0]);
+      }
+    } catch (error) {
+      console.error("Error fetching blog:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const relatedArticles = [
-    {
-      id: 2,
-      category: "GENZ FASHION",
-      date: "NOVEMBER 06, 2025",
-      title:
-        "How to Buy Dresses That Don't Require a Visit to Your Darji - Look for These 5 Things",
-      image:
-        "https://uptownie.com/cdn/shop/articles/11_0aef25e4-f303-4621-b78b-bddf21617510_540x.png?v=1762424044",
-    },
-    {
-      id: 3,
-      category: "ANIMAL PRINT OUTFIT",
-      date: "NOVEMBER 06, 2025",
-      title:
-        "Animal Print Is the Neutral You Didn't Know You Need — But You Do",
-      image:
-        "https://uptownie.com/cdn/shop/articles/default7_2_c2465c5e-f2b3-433c-bf76-1edf46dd089c_540x.jpg?v=1762423551",
-    },
-    {
-      id: 4,
-      category: "INDIANFASHIONTREND",
-      date: "NOVEMBER 06, 2025",
-      title: "Monsoon Outfit Guide: What to Wear (and What to Avoid)",
-      image:
-        "https://uptownie.com/cdn/shop/articles/website_2_for_1900_shirt_revamp_249bda04-14c0-46e2-bb13-bc9c252de6b2_540x.png?v=1762421447",
-    },
-  ];
+  const fetchRelatedArticles = async () => {
+    try {
+      // Fetch all blogs and take first 3 excluding current
+      // Ideally backend should have a 'related' endpoint
+      const response = await fetch(`${API_BASE_URL}/api/blogs/all?limit=4`);
+      const data = await response.json();
+      const related = (data.data || []).filter((b) => b._id !== id).slice(0, 3);
+      setRelatedArticles(related);
+    } catch (e) {
+      console.error("Error fetching related:", e);
+    }
+  };
+
+  if (loading)
+    return <div className="flex justify-center py-20">Loading...</div>;
+  if (!blog)
+    return <div className="flex justify-center py-20">Blog not found</div>;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-12 md:py-16 animate-fade-in font-sans">
@@ -129,73 +82,56 @@ const BlogDetails = () => {
           BLOG
         </p>
         <h1 className="text-3xl md:text-5xl font-normal mb-4 font-serif text-gray-900 leading-tight">
-          {blogPost.title}
+          {blog.title}
         </h1>
         <p className="text-gray-500 text-sm uppercase tracking-wide">
-          by{" "}
-          <span className="text-gray-800 font-medium">{blogPost.author}</span>{" "}
-          on {blogPost.date}
+          by <span className="text-gray-800 font-medium">{blog.author}</span> on{" "}
+          {new Date(blog.createdAt).toLocaleDateString(undefined, {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
         </p>
       </div>
 
       {/* Content */}
       <div className="space-y-12 max-w-7xl mx-auto mb-16">
-        {blogPost.content.map((block, index) => (
-          <div key={index}>
-            {block.type === "intro" && (
-              <p className="text-gray-800 leading-relaxed text-base md:text-lg mb-8">
-                {block.text}
-              </p>
-            )}
-            {block.type === "section" && (
-              <div className="space-y-4">
-                <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                  {block.title}
-                </h2>
-                <p className="text-gray-700 leading-relaxed">{block.text}</p>
-                {block.shopLink && (
-                  <p className="text-gray-900 font-medium">
-                    <Link to={block.shopUrl} className="hover:underline">
-                      {block.shopLink}
-                    </Link>
-                  </p>
-                )}
-              </div>
-            )}
+        {/* Main Image */}
+        {selectedImage && (
+          <div className="w-full h-auto mb-4 rounded-lg overflow-hidden">
+            <img
+              src={selectedImage}
+              alt={blog.title}
+              className="w-full object-cover max-h-[600px] transition-all duration-300"
+            />
           </div>
-        ))}
+        )}
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-medium text-gray-900">Style Tip:</h3>
-          <p className="text-gray-700 leading-relaxed">{blogPost.tips}</p>
-        </div>
-
-        <div className="space-y-2 pt-4">
-          <p className="text-sm font-medium text-gray-900">Products:</p>
-          <ul className="text-sm space-y-1">
-            {blogPost.products.map((product, idx) => (
-              <li key={idx}>
-                <a
-                  href={product.url}
-                  className="text-gray-600 hover:text-gray-900 underline"
-                >
-                  {product.name}
-                </a>
-              </li>
+        {/* Image Thumbnails Gallery */}
+        {blog.images && blog.images.length > 1 && (
+          <div className="flex gap-4 mb-8 overflow-x-auto pb-2 scrollbar-hide">
+            {blog.images.map((img, index) => (
+              <div
+                key={index}
+                onClick={() => setSelectedImage(img)}
+                className={`min-w-[100px] w-[100px] h-[100px] rounded-md overflow-hidden cursor-pointer border-2 transition-all ${
+                  selectedImage === img
+                    ? "border-indigo-600 opacity-100 scale-105"
+                    : "border-gray-200 opacity-70 hover:opacity-100 hover:border-gray-400"
+                }`}
+              >
+                <img
+                  src={img}
+                  alt={`Thumbnail ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
+              </div>
             ))}
-          </ul>
-        </div>
+          </div>
+        )}
 
-        <div className="pt-8 flex flex-wrap gap-2 items-center">
-          <span className="text-sm font-bold text-gray-900 mr-2">Tags:</span>
-          {blogPost.tags.map((tag, idx) => (
-            <span
-              key={idx}
-              className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-sm"
-            >
-              {tag}
-            </span>
-          ))}
+        <div className="text-gray-800 leading-relaxed text-base md:text-lg mb-8 whitespace-pre-wrap">
+          {blog.content}
         </div>
 
         {/* Social Share */}
@@ -217,11 +153,7 @@ const BlogDetails = () => {
           <FaArrowLeft className="mr-2 text-sm transition-transform group-hover:-translate-x-1" />
           <div className="text-left">
             <span className="block text-xs uppercase tracking-widest text-gray-400 mb-1">
-              PREVIOUS
-            </span>
-            <span className="font-medium text-sm">
-              How to Buy Dresses That Don't Require a Visit to Your Darji - Look
-              for These 5 Things
+              BACK TO BLOGS
             </span>
           </div>
         </Link>
@@ -235,13 +167,17 @@ const BlogDetails = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
           {relatedArticles.map((article) => (
             <div
-              key={article.id}
+              key={article._id}
               className="flex flex-col group cursor-pointer"
             >
-              <Link to={`/blog/${article.id}`}>
+              <Link to={`/blog/${article._id}`}>
                 <div className="overflow-hidden mb-4 rounded-sm">
                   <img
-                    src={article.image}
+                    src={
+                      article.images && article.images.length > 0
+                        ? article.images[0]
+                        : "https://via.placeholder.com/540x600?text=No+Image"
+                    }
                     alt={article.title}
                     className="w-full h-48 object-cover transform transition-transform duration-700 group-hover:scale-105"
                   />
@@ -249,13 +185,13 @@ const BlogDetails = () => {
                 <div className="space-y-2">
                   <div className="flex flex-col space-y-1">
                     <span className="text-[10px] font-bold tracking-widest uppercase text-gray-800">
-                      {article.category}
+                      {article.author || "BLOG"}
                     </span>
                     <span className="text-[10px] tracking-widest uppercase text-gray-500">
-                      {article.date}
+                      {new Date(article.createdAt).toLocaleDateString()}
                     </span>
                   </div>
-                  <h3 className="text-sm font-medium leading-snug text-gray-900 group-hover:text-purple-600 transition-colors">
+                  <h3 className="text-sm font-medium leading-snug text-gray-900 group-hover:text-purple-600 transition-colors line-clamp-2">
                     {article.title}
                   </h3>
                   <div className="pt-2">

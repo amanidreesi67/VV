@@ -13,10 +13,13 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination"; // Import Pagination CSS
 import { useCart } from "../Context/CartContext";
+import { useDispatch } from "react-redux";
+import { addItemToCart } from "../Redux/Customers/Cart/Action";
 
 function QuickViewModal({ product, onClose }) {
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, setIsCartOpen } = useCart();
+  const dispatch = useDispatch();
   const swiperRef = useRef(null);
 
   const [selectedColor, setSelectedColor] = useState(
@@ -46,13 +49,28 @@ function QuickViewModal({ product, onClose }) {
   };
 
   const handleAddToCart = () => {
-    addToCart(product, currentVariant, selectedSize, quantity);
+    // Dispatch Redux action
+    const reqData = {
+      productId: product._id || product.id, // Ensure correct ID field
+      size: selectedSize,
+      quantity: quantity,
+      variant: currentVariant,
+    };
+    dispatch(addItemToCart(reqData));
+
+    // Also update UI context if needed to open drawer
+    // The Redux success usually triggers a cart fetch.
+    // If context 'isCartOpen' depends on local state, we might need to set it.
+    // CartDrawer uses 'useCart().setIsCartOpen(true)' typically to show itself?
+    // Let's assume dispatching action is enough for data.
+    // But to OPEN the drawer:
+    setIsCartOpen(true);
     onClose();
   };
 
   if (!product) return null;
 
-  const basePrice = currentVariant?.basePrice || 0;
+  const basePrice = currentVariant?.price || 0; // Fix: use .price not .basePrice
   const discount = product.discountedPercent || 0;
   const discountedPrice = Math.round(basePrice - (basePrice * discount) / 100);
 

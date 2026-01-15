@@ -16,8 +16,14 @@ await DBConnect();
 import authRoutes from "./routes/auth.route.js";
 app.use("/api", authRoutes);
 
+import adminAuthRoutes from "./routes/adminAuth.route.js";
+app.use("/api/admin/auth", adminAuthRoutes);
+
 import userRoutes from "./routes/user.route.js";
 app.use("/api/user", userRoutes);
+
+import adminUserRoutes from "./routes/adminUser.route.js";
+app.use("/api/users", adminUserRoutes);
 
 import productRoutes from "./routes/product.route.js";
 app.use("/api/products", productRoutes);
@@ -31,6 +37,22 @@ app.use("/api/reviews", reviewRoutes);
 import cartRoutes from "./routes/cart.route.js";
 app.use("/api/cart", cartRoutes);
 
+import paymentRoutes from "./routes/payment.route.js";
+app.use("/api/payments", paymentRoutes);
+
+import orderRoutes from "./routes/order.route.js";
+app.use("/api/orders", orderRoutes);
+
+import adminOrderRoutes from "./routes/adminOrder.route.js";
+app.use("/api/admin/orders", adminOrderRoutes);
+
+import queryRoutes from "./routes/query.route.js";
+app.use("/api/queries", queryRoutes);
+
+import blogRoutes from "./routes/blog.route.js";
+app.use("/api/blogs", blogRoutes);
+
 app.listen(PORT, () => {
   console.log("Server running on port:", PORT);
 });
+// Trigger restart

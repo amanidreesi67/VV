@@ -23,8 +23,10 @@ import BlogDetails from "./Blog/BlogDetails";
 import ScrollToTop from "./ScrollTOTop";
 import Careers from "./Careers/Careers";
 import OrderHistory from "./OrderHistory/OrderHistory";
+import OrderDetails from "./OrderHistory/OrderDetails";
 import Addresses from "./OrderHistory/Addresses";
 import Login from "./Pages/Login";
+import OrderSuccess from "./Order/OrderSuccess";
 
 import { useDispatch, useSelector } from "react-redux"; // Import hooks
 import { useEffect } from "react";
@@ -70,6 +72,9 @@ function App() {
         <Route path="/blog/:id" element={<BlogDetails />} />
         <Route path="/careers" element={<Careers />} />
         <Route path="/orders" element={<OrderHistory />} />
+        <Route path="/orders" element={<OrderHistory />} />
+        <Route path="/account/order/:orderId" element={<OrderDetails />} />
+        <Route path="/order-success/:orderId" element={<OrderSuccess />} />
         <Route path="/account/addresses" element={<Addresses />} />
         <Route path="/login" element={<Login />} />
       </Routes>

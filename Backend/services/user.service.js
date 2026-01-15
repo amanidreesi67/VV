@@ -167,3 +167,21 @@ export const getWishlist = async (userId) => {
     throw new Error(err.message);
   }
 };
+
+export const getAllUsers = async (page = 1, limit = 10) => {
+  try {
+    const skip = (page - 1) * limit;
+    const users = await User.find()
+      .skip(skip)
+      .limit(limit)
+      .populate("addresses")
+      .populate("orders"); // Populate orders to show count/details if needed
+
+    const totalUsers = await User.countDocuments();
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    return { users, totalPages, currentPage: page, totalUsers };
+  } catch (err) {
+    throw new Error(err.message);
+  }
+};
