@@ -327,11 +327,38 @@ const Queries = () => {
             },
           }}
         >
-          <MenuItem onClick={() => updateStatus("Pending")}>Pending</MenuItem>
-          <MenuItem onClick={() => updateStatus("In Progress")}>
-            In Progress
-          </MenuItem>
-          <MenuItem onClick={() => updateStatus("Resolved")}>Resolved</MenuItem>
+          {(() => {
+            const selectedQuery = queries.find(
+              (q) => q._id === selectedQueryId
+            );
+            const current = selectedQuery?.status || "Pending";
+
+            const isPendingDisabled =
+              current === "In Progress" || current === "Resolved";
+            const isInProgressDisabled = current === "Resolved";
+
+            return (
+              <div>
+                <MenuItem
+                  onClick={() => updateStatus("Pending")}
+                  disabled={isPendingDisabled}
+                  sx={{ color: isPendingDisabled ? "gray" : "white" }}
+                >
+                  Pending
+                </MenuItem>
+                <MenuItem
+                  onClick={() => updateStatus("In Progress")}
+                  disabled={isInProgressDisabled}
+                  sx={{ color: isInProgressDisabled ? "gray" : "white" }}
+                >
+                  In Progress
+                </MenuItem>
+                <MenuItem onClick={() => updateStatus("Resolved")}>
+                  Resolved
+                </MenuItem>
+              </div>
+            );
+          })()}
         </Menu>
 
         {/* Delete Confirmation Dialog */}

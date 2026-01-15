@@ -110,8 +110,26 @@ const addCartItem = async (userId, req) => {
   }
 };
 
+const clearUserCart = async (userId) => {
+  try {
+    const cart = await Cart.findOne({ user: userId });
+    if (!cart) return;
+
+    await CartItem.deleteMany({ cart: cart._id });
+    cart.cartItems = [];
+    cart.totalPrice = 0;
+    cart.totalItem = 0;
+    cart.totalDiscountedPrice = 0;
+    cart.discount = 0;
+    await cart.save();
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export default {
   createCart,
   findUserCart,
   addCartItem,
+  clearUserCart,
 };

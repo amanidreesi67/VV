@@ -45,7 +45,6 @@
 
 // export default authReducer;
 
-
 // import {
 //   REGISTER_REQUEST,
 //   REGISTER_SUCCESS,
@@ -126,7 +125,6 @@
 
 // export default authReducer;
 
-
 import {
   REGISTER_REQUEST,
   REGISTER_SUCCESS,
@@ -145,11 +143,12 @@ import {
 
 const initialState = {
   user: null,
-  userList: [],      // always an array for mapping in components
+  userList: [], // always an array for mapping in components
   isLoading: false,
   error: null,
-  currentPage: 1,    // pagination state
+  currentPage: 1, // pagination state
   totalPages: 1,
+  jwt: localStorage.getItem("jwt") || null, // Initialize JWT
 };
 
 const authReducer = (state = initialState, action) => {
@@ -169,6 +168,8 @@ const authReducer = (state = initialState, action) => {
       return {
         ...state,
         isLoading: false,
+        jwt: action.payload.jwt, // Update JWT on login success
+        error: null,
       };
 
     case REGISTER_FAILURE:
@@ -193,7 +194,12 @@ const authReducer = (state = initialState, action) => {
       const payload = action.payload;
 
       // If payload is an object with `users` array (and pagination), use that
-      if (payload && typeof payload === "object" && !Array.isArray(payload) && Array.isArray(payload.users)) {
+      if (
+        payload &&
+        typeof payload === "object" &&
+        !Array.isArray(payload) &&
+        Array.isArray(payload.users)
+      ) {
         return {
           ...state,
           isLoading: false,
@@ -227,6 +233,7 @@ const authReducer = (state = initialState, action) => {
       localStorage.removeItem("jwt");
       return {
         ...state,
+        jwt: null,
         user: null,
       };
 

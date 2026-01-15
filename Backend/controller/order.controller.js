@@ -1,0 +1,37 @@
+import orderService from "../services/order.service.js";
+
+const findUserOrders = async (req, res) => {
+  try {
+    const user = req.user;
+    const orders = await orderService.usersOrderHistory(user._id);
+    res.status(200).send(orders);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+};
+
+const findOrderById = async (req, res) => {
+  try {
+    const order = await orderService.findOrderById(req.params.id);
+    res.status(200).send(order);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+};
+
+const createOrder = async (req, res) => {
+  // This might be used if we support Cash on Delivery or non-payment flows.
+  try {
+    const user = req.user;
+    const savedOrder = await orderService.createOrder(user, req.body);
+    res.status(201).send(savedOrder);
+  } catch (error) {
+    res.status(500).send({ error: error.message });
+  }
+};
+
+export default {
+  findUserOrders,
+  findOrderById,
+  createOrder,
+};

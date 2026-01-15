@@ -248,6 +248,10 @@ export const getUser = (token) => async (dispatch) => {
     dispatch({ type: GET_USER_SUCCESS, payload: response.data });
     return response.data;
   } catch (error) {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("jwt");
+      dispatch({ type: LOGOUT });
+    }
     dispatch({
       type: GET_USER_FAILURE,
       payload: error.response?.data?.error || error.message,

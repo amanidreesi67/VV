@@ -12,6 +12,52 @@ import {
 function ContactUs() {
   const navigate = useNavigate();
 
+  const [formData, setFormData] = React.useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+  const [loading, setLoading] = React.useState(false);
+
+  const API_BASE_URL =
+    import.meta.env.VITE_React_BASE_API_URL || "http://localhost:5000";
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/queries`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          subject: formData.phone, // Using phone as subject or part of message as per model
+          message: formData.message,
+        }),
+      });
+
+      if (response.ok) {
+        alert("Your message has been sent successfully!");
+        setFormData({ name: "", email: "", phone: "", message: "" });
+      } else {
+        alert("Failed to send message. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error sending query:", error);
+      alert("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header */}
@@ -32,26 +78,41 @@ function ContactUs() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
         {/* Left Side - Form */}
         <div>
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <input
                 type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
                 placeholder="Name"
+                required
                 className="w-full border border-gray-200 p-3 rounded-sm focus:outline-none focus:border-black transition-colors"
               />
               <input
                 type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
                 placeholder="Email"
+                required
                 className="w-full border border-gray-200 p-3 rounded-sm focus:outline-none focus:border-black transition-colors"
               />
             </div>
             <input
               type="tel"
-              placeholder="Phone Number"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              placeholder="Phone Number (Subject)"
               className="w-full border border-gray-200 p-3 rounded-sm focus:outline-none focus:border-black transition-colors"
             />
             <textarea
+              name="message"
+              value={formData.message}
+              onChange={handleChange}
               placeholder="Message"
+              required
               rows={6}
               className="w-full border border-gray-200 p-3 rounded-sm focus:outline-none focus:border-black transition-colors resize-none"
             ></textarea>
@@ -66,9 +127,10 @@ function ContactUs() {
 
             <button
               type="submit"
-              className="bg-black text-white px-8 py-3 font-medium hover:bg-gray-800 transition-colors uppercase text-sm tracking-wide"
+              disabled={loading}
+              className="bg-black text-white px-8 py-3 font-medium hover:bg-gray-800 transition-colors uppercase text-sm tracking-wide disabled:opacity-50"
             >
-              Submit Now
+              {loading ? "Sending..." : "Submit Now"}
             </button>
           </form>
         </div>

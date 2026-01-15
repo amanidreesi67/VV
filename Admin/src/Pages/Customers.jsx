@@ -8,7 +8,15 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import Typography from "@mui/material/Typography";
 import TableContainer from "@mui/material/TableContainer";
-import { CardHeader, Pagination } from "@mui/material";
+import {
+  CardHeader,
+  Pagination,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Button,
+  Paper,
+} from "@mui/material";
 import { allUser } from "../Redux/Auth/Action";
 import { useDispatch, useSelector } from "react-redux";
 import React, { useEffect } from "react";
@@ -32,6 +40,39 @@ const Customers = () => {
   useEffect(() => {
     dispatch(allUser(page));
   }, [dispatch, page]);
+
+  // Modal State
+  const [openval, setOpenval] = React.useState(false);
+  const [userOrders, setUserOrders] = React.useState([]);
+  const [loadingOrders, setLoadingOrders] = React.useState(false);
+
+  // Import API_BASE_URL and axios inside or use existing config
+  const API_BASE_URL = "http://localhost:5000"; // Or import from config
+  const token = localStorage.getItem("jwt");
+
+  const handleOpenOrders = async (userId) => {
+    setOpenval(true);
+    setLoadingOrders(true);
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/admin/orders/user/${userId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const data = await response.json();
+      setUserOrders(data);
+    } catch (error) {
+      console.error("Error fetching user orders:", error);
+    } finally {
+      setLoadingOrders(false);
+    }
+  };
+
+  const handleCloseOrders = () => {
+    setOpenval(false);
+    setUserOrders([]);
+  };
 
   return (
     <Box>
@@ -66,6 +107,12 @@ const Customers = () => {
                 >
                   Orders
                 </TableCell>
+                <TableCell
+                  align="center"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
+                  Action
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody sx={{ color: "white" }}>
@@ -87,6 +134,14 @@ const Customers = () => {
                   <TableCell sx={{ color: "white" }}>{item.email}</TableCell>
                   <TableCell align="center" sx={{ color: "white" }}>
                     {item.orders?.length || 0}
+                  </TableCell>
+                  <TableCell align="center">
+                    <button
+                      onClick={() => handleOpenOrders(item._id)}
+                      className="px-4 py-1.5 text-sm rounded bg-indigo-600 hover:bg-indigo-700 text-white transition-colors"
+                    >
+                      View
+                    </button>
                   </TableCell>
                 </TableRow>
               ))}
@@ -116,6 +171,85 @@ const Customers = () => {
           />
         </div>
       </Card>
+
+      {/* Orders Modal */}
+      <Dialog
+        open={openval}
+        onClose={handleCloseOrders}
+        maxWidth="md"
+        fullWidth
+        PaperProps={{
+          style: {
+            backgroundColor: "#1c1c1c",
+            color: "white",
+            border: "1px solid #333",
+          },
+        }}
+      >
+        <DialogTitle
+          sx={{
+            borderBottom: "1px solid #333",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span>User Orders</span>
+          <Button onClick={handleCloseOrders} sx={{ color: "gray" }}>
+            ✕
+          </Button>
+        </DialogTitle>
+        <DialogContent sx={{ mt: 2 }}>
+          {loadingOrders ? (
+            <div className="flex justify-center p-5">Loading...</div>
+          ) : userOrders.length > 0 ? (
+            <TableContainer component={Paper} sx={{ bgcolor: "transparent" }}>
+              <Table size="small" aria-label="orders table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={{ color: "#aaa" }}>Order ID</TableCell>
+                    <TableCell sx={{ color: "#aaa" }}>Date</TableCell>
+                    <TableCell sx={{ color: "#aaa" }}>Status</TableCell>
+                    <TableCell sx={{ color: "#aaa" }}>Total</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {userOrders.map((order) => (
+                    <TableRow key={order._id}>
+                      <TableCell sx={{ color: "white" }}>
+                        #{order._id.slice(-6).toUpperCase()}
+                      </TableCell>
+                      <TableCell sx={{ color: "white" }}>
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={`px-2 py-1 rounded text-xs ${
+                            order.orderStatus === "DELIVERED"
+                              ? "bg-green-900 text-green-200"
+                              : order.orderStatus === "CANCELLED"
+                              ? "bg-red-900 text-red-200"
+                              : "bg-yellow-900 text-yellow-200"
+                          }`}
+                        >
+                          {order.orderStatus}
+                        </span>
+                      </TableCell>
+                      <TableCell sx={{ color: "white" }}>
+                        ₹{order.totalDiscountedPrice}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          ) : (
+            <p className="text-center text-gray-400 py-4">
+              No orders found for this user.
+            </p>
+          )}
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

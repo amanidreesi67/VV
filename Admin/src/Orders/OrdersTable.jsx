@@ -963,8 +963,10 @@ const OrdersTable = () => {
                           color: "white !important",
                           fontWeight: "bold",
                           textAlign: "center",
+                          fontSize: "0.75rem",
+                          height: "24px",
                         }}
-                        label={item.orderStatus}
+                        label={item.orderStatus.replace(/_/g, " ")}
                         size="small"
                         color={
                           item.orderStatus === "PENDING"

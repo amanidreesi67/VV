@@ -242,7 +242,6 @@ function Header() {
         isOpen={isAuthModalOpen}
         onClose={() => {
           setIsAuthModalOpen(false);
-          checkLoginStatus(); // Re-check login status when modal closes
         }}
       />
     </>

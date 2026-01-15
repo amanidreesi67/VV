@@ -1,12 +1,15 @@
 import React from "react";
 import { Search, Bell, Mail, User, LogOut, Menu } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { logout } from "../Redux/Auth/Action";
 
 const Topbar = ({ toggleSidebar }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
-    localStorage.removeItem("jwt");
+    dispatch(logout());
     navigate("/login");
   };
   return (
@@ -70,13 +73,23 @@ const Topbar = ({ toggleSidebar }) => {
             className="text-gray-400 hover:text-white cursor-pointer"
           />
 
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-sm transition-colors"
-          >
-            <LogOut size={16} />
-            Logout
-          </button>
+          {localStorage.getItem("jwt") ? (
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-md text-sm transition-colors"
+            >
+              <LogOut size={16} />
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/login")}
+              className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-md text-sm transition-colors"
+            >
+              <User size={16} />
+              Login
+            </button>
+          )}
         </div>
       </div>
     </header>

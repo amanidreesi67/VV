@@ -84,14 +84,14 @@ export const HeaderNavigation = [
       id: "co-ords",
       title: "Co-ords",
       subHeading: [
-        { id: "all-co-ords", title: "All Co-ords" },
-        { id : "cotton-co-ords-sets", title: "Cotton Co-ords Sets" },
-        { id : "linen-co-ords-sets", title: "Linen Co-ords Sets" },
-        { id : "solid-co-ords-sets", title: "Solid Co-ords Sets" },
-        { id : "printed-co-ords-sets", title: "Printed Co-ords Sets" },
-        { id : "shorts-co-ords-sets", title: "Shorts Co-ords Sets" },
-        { id : "skirt-co-ords-sets", title: "Skirt Co-ords Sets" },
-        { id : "co-ords-2-at-1900", title: "Co-ords: 2 at 1900" }
+        { id: "all-co-ords", title: "All Co-ords", link: "/pdt/all-co-ords" },
+        { id : "cotton-co-ords-sets", title: "Cotton Co-ords Sets", link: "/pdt/cotton-co-ords-sets" },
+        { id : "linen-co-ords-sets", title: "Linen Co-ords Sets", link: "/pdt/linen-co-ords-sets" },
+        { id : "solid-co-ords-sets", title: "Solid Co-ords Sets", link: "/pdt/solid-co-ords-sets" },
+        { id : "printed-co-ords-sets", title: "Printed Co-ords Sets", link: "/pdt/printed-co-ords-sets" },
+        { id : "shorts-co-ords-sets", title: "Shorts Co-ords Sets", link: "/pdt/shorts-co-ords-sets" },
+        { id : "skirt-co-ords-sets", title: "Skirt Co-ords Sets", link: "/pdt/skirt-co-ords-sets" },
+        { id : "co-ords-2-at-1900", title: "Co-ords: 2 at 1900", link: "/pdt/co-ords-2-at-1900" }
       ]
     },
     {
@@ -103,12 +103,13 @@ export const HeaderNavigation = [
       id: "sale",
       title: "Sale",
       subHeading: [
-        { id : "buy-3-tops-at-999", title: "Buy 3 Tops at 999"},
-        { id : "buy-2-tops-at-999", title: "Buy 2 Tops at 999"},
-        { id : "buy-2-shirts-at-1900", title: "Buy 2 Shirts at 1900"},
-        { id : "buy-2-dresses-at-1900", title: "Buy 2 Dresses at 1900"},
-        { id : "buy-3-dresses-at-4900", title: "Buy 3 Dresses at 4900"},
-        { id : "buy-3-shirts-at-4900", title: "Buy 3 Shirts at 4900"},  
+        { id : "all-sale", title: "All Sale", link: "/pdt/all-sale"},
+        { id : "buy-3-tops-at-999", title: "Buy 3 Tops at 999", link: "/pdt/buy-3-tops-at-999"},
+        { id : "buy-2-tops-at-999", title: "Buy 2 Tops at 999", link: "/pdt/buy-2-tops-at-999"},
+        { id : "buy-2-shirts-at-1900", title: "Buy 2 Shirts at 1900", link: "/pdt/buy-2-shirts-at-1900"},
+        { id : "buy-2-dresses-at-1900", title: "Buy 2 Dresses at 1900", link: "/pdt/buy-2-dresses-at-1900"},
+        { id : "buy-3-dresses-at-4900", title: "Buy 3 Dresses at 4900", link: "/pdt/buy-3-dresses-at-4900"},
+        { id : "buy-3-shirts-at-4900", title: "Buy 3 Shirts at 4900", link: "/pdt/buy-3-shirts-at-4900"},  
       ]
     }
 ];

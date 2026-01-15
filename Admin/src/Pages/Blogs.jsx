@@ -433,7 +433,7 @@ const Blogs = () => {
               ) : (
                 <TableRow>
                   <TableCell colSpan={7} sx={{ textAlign: "center", py: 3 }}>
-                    <Typography variant="body2" color="gray.500">
+                    <Typography variant="body2" color="white">
                       No blogs found.
                     </Typography>
                   </TableCell>
@@ -568,10 +568,10 @@ const Blogs = () => {
                     "& .MuiOutlinedInput-root": {
                       color: "white",
                       "& fieldset": { borderColor: "#3f3f46" },
-                      "&:hover fieldset": { borderColor: "gray.400" },
+                      "&:hover fieldset": { borderColor: "white" },
                       "&.Mui-focused fieldset": { borderColor: "indigo.500" },
                     },
-                    "& .MuiInputLabel-root": { color: "gray.400" },
+                    "& .MuiInputLabel-root": { color: "white" },
                     "& .MuiInputLabel-root.Mui-focused": {
                       color: "indigo.500",
                     },
@@ -583,7 +583,7 @@ const Blogs = () => {
               <Box>
                 <Typography
                   variant="subtitle2"
-                  sx={{ mb: 1, fontWeight: 600, color: "gray.300" }}
+                  sx={{ mb: 1, fontWeight: 600, color: "white" }}
                 >
                   Blog Images (Max 4)
                 </Typography>
@@ -593,7 +593,7 @@ const Blogs = () => {
                   <Box sx={{ mb: 2 }}>
                     <Typography
                       variant="caption"
-                      sx={{ color: "gray.500", mb: 1, display: "block" }}
+                      sx={{ color: "white", mb: 1, display: "block" }}
                     >
                       Current Images:
                     </Typography>
@@ -672,7 +672,7 @@ const Blogs = () => {
                     <Upload size={32} color="#6366f1" />
                     <Typography
                       variant="body2"
-                      sx={{ mt: 1, color: "gray.400", textAlign: "center" }}
+                      sx={{ mt: 1, color: "white", textAlign: "center" }}
                     >
                       Click to upload images
                     </Typography>
@@ -684,7 +684,7 @@ const Blogs = () => {
                   <Box sx={{ mt: 2 }}>
                     <Typography
                       variant="caption"
-                      sx={{ color: "gray.500", mb: 1, display: "block" }}
+                      sx={{ color: "white", mb: 1, display: "block" }}
                     >
                       New Images:
                     </Typography>
@@ -747,7 +747,7 @@ const Blogs = () => {
                 }}
               >
                 {isSubmitting ? (
-                  <CircularProgress size={24} color="inherit" />
+                  <CircularProgress size={24} color="white" />
                 ) : editingBlog ? (
                   "Update Blog"
                 ) : (
