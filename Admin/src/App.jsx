@@ -7,7 +7,7 @@ import Customers from "./Pages/Customers";
 import Blogs from "./Pages/Blogs";
 import AdminAddProduct from "./Pages/AdminAddProduct";
 import OrdersTable from "./Orders/OrdersTable";
-import Coupan from "./Coupan/Coupan";
+import Coupan from "./Coupons/Coupan";
 import Queries from "./Pages/Queries";
 import ProductDetails from "./Pages/ProductDetails";
 
