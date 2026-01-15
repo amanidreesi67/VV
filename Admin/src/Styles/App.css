@@ -9,12 +9,17 @@
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .blinking-cursor::after {
-  content: '|';
+  content: "|";
   animation: blink 1s infinite;
   margin-left: 2px;
 }
@@ -34,8 +39,7 @@
 
 } */
 
-CreateProductForm.css
-.createProductContainer {
+CreateProductForm.css .createProductContainer {
   padding: 1rem;
   overflow-y: auto; /* important */
   max-height: 100vh; /* only if you're restricting height */
