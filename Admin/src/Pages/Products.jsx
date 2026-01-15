@@ -513,26 +513,41 @@ const ProductsTable = () => {
                         sx={{
                           display: "flex",
                           flexDirection: "column",
-                          gap: 1,
-                          fontSize: "0.75rem",
-                          maxHeight: 100,
-                          overflowY: "auto",
+                          gap: 0.5,
+                          alignItems: "center",
                         }}
                       >
-                        {item.variants?.map((v, i) => (
+                        {item.variants?.slice(0, 3).map((v, i) => (
                           <div
                             key={i}
-                            className="flex items-center gap-2 justify-center"
+                            className="flex items-center gap-2 px-2 py-1 rounded-md bg-zinc-800 border border-white/10 w-max shadow-sm"
                           >
-                            <div
-                              className="w-3 h-3 rounded-full border border-gray-500"
+                            <span
+                              className="w-2.5 h-2.5 rounded-full border border-gray-500 flex-shrink-0"
                               style={{ backgroundColor: v.hex || "#000" }}
-                            ></div>
-                            <span>
-                              {v.color} (₹{v.price})
+                            ></span>
+                            <span className="text-xs text-gray-300 capitalize font-medium">
+                              {v.color}
+                            </span>
+                            <span className="text-xs text-zinc-600">|</span>
+                            <span className="text-xs text-indigo-400 font-semibold">
+                              ₹{v.price}
                             </span>
                           </div>
                         ))}
+                        {item.variants?.length > 3 && (
+                          <Typography
+                            variant="caption"
+                            sx={{
+                              color: "gray",
+                              fontSize: "0.7rem",
+                              mt: 0.5,
+                              fontStyle: "italic",
+                            }}
+                          >
+                            +{item.variants.length - 3} more
+                          </Typography>
+                        )}
                       </Box>
                     </TableCell>
                     <TableCell
