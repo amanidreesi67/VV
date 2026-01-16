@@ -68,6 +68,12 @@ const CustomersTable = ({ customers = [] }) => {
               <TableCell sx={{ fontWeight: 600, color: "gray" }}>
                 Email
               </TableCell>
+              <TableCell sx={{ fontWeight: 600, color: "gray" }}>
+                Orders
+              </TableCell>
+              <TableCell sx={{ fontWeight: 600, color: "gray" }}>
+                Action
+              </TableCell>
             </TableRow>
           </TableHead>
 
@@ -96,6 +102,17 @@ const CustomersTable = ({ customers = [] }) => {
 
                   <TableCell sx={{ fontSize: ".9rem", color: "gray.300" }}>
                     {item.email}
+                  </TableCell>
+                  <TableCell sx={{ fontSize: ".9rem", color: "gray.300" }}>
+                    {item.orders?.length || 0}
+                  </TableCell>
+                  <TableCell>
+                    <button
+                      onClick={() => navigate("/customers")}
+                      className="text-indigo-400 hover:text-indigo-300 font-medium text-sm transition-colors"
+                    >
+                      View
+                    </button>
                   </TableCell>
                 </TableRow>
               ))

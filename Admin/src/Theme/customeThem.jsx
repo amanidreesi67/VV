@@ -115,7 +115,9 @@ export const CardStatsVertical = ({
         {icon}
       </Avatar>
 
-      <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
+      <CardContent
+        sx={{ p: 0, "&:last-child": { pb: 0 }, flex: 1, minWidth: 0 }}
+      >
         <Typography
           variant="h6"
           sx={{ fontWeight: 700, color: theme.palette.text.primary }}
@@ -124,12 +126,26 @@ export const CardStatsVertical = ({
         </Typography>
         <Typography
           variant="body2"
-          sx={{ color: theme.palette.text.secondary, mt: 0.25 }}
+          sx={{
+            color: theme.palette.text.secondary,
+            mt: 0.25,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
         >
           {title}
         </Typography>
 
-        <Box sx={{ mt: 0.6, display: "flex", alignItems: "center", gap: 1 }}>
+        <Box
+          sx={{
+            mt: 0.6,
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            flexWrap: "wrap",
+          }}
+        >
           <Typography
             variant="caption"
             sx={{ color: trendColor, fontWeight: 700 }}
@@ -138,7 +154,10 @@ export const CardStatsVertical = ({
           </Typography>
           <Typography
             variant="caption"
-            sx={{ color: theme.palette.text.secondary }}
+            sx={{
+              color: theme.palette.text.secondary,
+              whiteSpace: "nowrap",
+            }}
           >
             {subtitle}
           </Typography>

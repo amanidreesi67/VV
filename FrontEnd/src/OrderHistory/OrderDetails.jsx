@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
-import { getOrderById } from "../Redux/Customers/Order/Action"; // Ensure this action handles single order fetch
+import {
+  getOrderById,
+  cancelOrder,
+  returnOrder,
+} from "../Redux/Customers/Order/Action"; // Ensure this action handles single order fetch
 import { MdCancel, MdArrowBack } from "react-icons/md";
 import OrderStatusStepper from "./OrderStatusStepper";
 
@@ -30,15 +34,66 @@ const OrderDetails = () => {
       </div>
     );
 
+  const handleCancelOrder = () => {
+    dispatch(cancelOrder(orderId));
+  };
+
+  const handleReturnOrder = () => {
+    dispatch(returnOrder(orderId));
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
       {/* Breadcrumb / Back */}
-      <div className="mb-6 flex items-center gap-2 text-sm text-gray-500">
-        <Link to="/orders" className="hover:text-black flex items-center gap-1">
-          <MdArrowBack /> Back to Orders
-        </Link>
-        <span>/</span>
-        <span className="text-black font-semibold">Order #{order._id}</span>
+      <div className="mb-6 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-sm text-gray-500">
+          <Link
+            to="/orders"
+            className="hover:text-black flex items-center gap-1"
+          >
+            <MdArrowBack /> Back to Orders
+          </Link>
+          <span>/</span>
+          <span className="text-black font-semibold">Order #{order._id}</span>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex gap-4">
+          {order.orderStatus !== "DELIVERED" &&
+            order.orderStatus !== "SHIPPED" &&
+            order.orderStatus !== "CANCELLED" &&
+            order.orderStatus !== "COMPLETED" &&
+            order.orderStatus !== "OUT_FOR_DELIVERY" && (
+              <button
+                onClick={handleCancelOrder}
+                className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-medium text-sm"
+              >
+                <MdCancel /> Cancel Order
+              </button>
+            )}
+
+          {order.orderStatus === "DELIVERED" &&
+            order.returnStatus === "NONE" && (
+              <button
+                onClick={handleReturnOrder}
+                className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm"
+              >
+                Return / Exchange
+              </button>
+            )}
+
+          {order.returnStatus === "REQUESTED" && (
+            <span className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg font-medium text-sm">
+              Return Requested
+            </span>
+          )}
+
+          {order.returnStatus === "APPROVED" && (
+            <span className="px-4 py-2 bg-green-100 text-green-800 rounded-lg font-medium text-sm">
+              Return Approved
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

@@ -237,6 +237,69 @@ const getDashboardOverview = async () => {
   }
 };
 
+// Implementations
+
+const cancelOrder = async (orderId, userId) => {
+  const order = await findOrderById(orderId);
+  if (!order) throw new Error("Order not found");
+
+  // Allow admin or the specific user
+  // (userId check skipped here if assuming controller sends validated user, or add here if needed)
+
+  if (
+    order.orderStatus === "SHIPPED" ||
+    order.orderStatus === "DELIVERED" ||
+    order.orderStatus === "COMPLETED" ||
+    order.orderStatus === "OUT_FOR_DELIVERY"
+  ) {
+    throw new Error("Order cannot be cancelled at this stage.");
+  }
+
+  order.orderStatus = "CANCELLED";
+  order.cancelReason = "User requested cancellation"; // Simple default or pass from args
+  return await order.save();
+};
+
+const requestReturn = async (orderId, userId) => {
+  const order = await findOrderById(orderId);
+  if (!order) throw new Error("Order not found");
+
+  if (order.orderStatus !== "DELIVERED") {
+    throw new Error("Order is not delivered yet.");
+  }
+
+  if (order.returnStatus !== "NONE") {
+    throw new Error("Return already requested or processed.");
+  }
+
+  // Check 7-day window
+  const deliveryDate = new Date(order.deliveryDate || order.updatedAt); // Fallback to updatedAt if deliveryDate missing
+  const currentDate = new Date();
+  const diffTime = Math.abs(currentDate - deliveryDate);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays > 7) {
+    throw new Error("Return period (7 days) has expired.");
+  }
+
+  order.returnStatus = "REQUESTED";
+  order.returnReason = "User requested return"; // Pass as arg if needed
+  return await order.save();
+};
+
+const approveReturn = async (orderId) => {
+  const order = await findOrderById(orderId);
+  if (!order) throw new Error("Order not found");
+
+  if (order.returnStatus !== "REQUESTED") {
+    throw new Error("Return request not found or already processed.");
+  }
+
+  order.returnStatus = "APPROVED";
+  order.orderStatus = "RETURNED"; // Update main status to RETURNED upon approval
+  return await order.save();
+};
+
 export default {
   createOrder,
   placeOrder,
@@ -248,6 +311,9 @@ export default {
   findOrderById,
   usersOrderHistory,
   getAllOrders,
+  cancelOrder,
+  requestReturn,
+  approveReturn,
   deleteOrder,
   getDashboardOverview,
 };

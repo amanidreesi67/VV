@@ -1077,23 +1077,16 @@ const OrdersTable = () => {
                             >
                               Delivered Order
                             </MenuItem>
-                            <MenuItem
-                              onClick={() => handleReturnOrder(item._id, index)}
-                              disabled={
-                                item.orderStatus === "RETURNED_REQUESTED" ||
-                                item.orderStatus === "RETURNED"
-                              }
-                            >
-                              Return Order
-                            </MenuItem>
-                            <MenuItem
-                              onClick={() =>
-                                handleReturnedOrder(item._id, index)
-                              }
-                              disabled={item.orderStatus === "RETURNED"}
-                            >
-                              Returned Order
-                            </MenuItem>
+                            {item.returnStatus === "REQUESTED" && (
+                              <MenuItem
+                                onClick={() => handleOpenReturnModal(item)}
+                              >
+                                Approve/Reject Return
+                              </MenuItem>
+                            )}
+                            {item.orderStatus === "RETURNED" && (
+                              <MenuItem disabled>Returned</MenuItem>
+                            )}
                           </Menu>
                         </div>
                       )}

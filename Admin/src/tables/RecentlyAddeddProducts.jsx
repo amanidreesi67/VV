@@ -17,6 +17,20 @@ import { useNavigate } from "react-router-dom";
 
 const RecentlyAddeddProducts = ({ products = [] }) => {
   const navigate = useNavigate();
+
+  const calculateStock = (stock) => {
+    if (!stock) return 0;
+    if (typeof stock === "number") return stock;
+    if (typeof stock === "object") {
+      // Sum values of keys (S, M, L, etc.)
+      return Object.values(stock).reduce(
+        (acc, val) => acc + (Number(val) || 0),
+        0
+      );
+    }
+    return 0;
+  };
+
   return (
     <Card
       sx={{
@@ -108,9 +122,17 @@ const RecentlyAddeddProducts = ({ products = [] }) => {
                 <TableCell sx={{ color: "gray.300" }}>
                   {item.category?.name || "N/A"}
                 </TableCell>
-                <TableCell sx={{ color: "gray.300" }}>₹{item.price}</TableCell>
                 <TableCell sx={{ color: "gray.300" }}>
-                  {item.quantity}
+                  ₹
+                  {item.variants?.[0]?.price ||
+                    item.price ||
+                    item.discountedPrice ||
+                    0}
+                </TableCell>
+                <TableCell sx={{ color: "gray.300" }}>
+                  {calculateStock(
+                    item.variants?.[0]?.stock || item.quantity || 0
+                  )}
                 </TableCell>
               </TableRow>
             ))}

@@ -5,6 +5,7 @@ import authenticate from "../middleware/authenticate.js";
 
 router.get("/user", authenticate, orderController.findUserOrders);
 router.get("/:id", authenticate, orderController.findOrderById);
-// router.post("/", authenticate, orderController.createOrder); // If needed
+router.put("/:id/cancel", authenticate, orderController.cancelOrder);
+router.put("/:id/return", authenticate, orderController.requestReturn);
 
 export default router;
