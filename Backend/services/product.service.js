@@ -91,6 +91,20 @@ async function getAllProducts(reqQuery) {
 
   let query = Product.find().populate("reviews");
 
+  // 1. Search Filtering
+  if (reqQuery.search || reqQuery.q) {
+    const searchTerm = reqQuery.search || reqQuery.q;
+    const searchRegex = new RegExp(searchTerm, "i");
+    query = query.find({
+      $or: [
+        { title: searchRegex },
+        { description: searchRegex },
+        { brand: searchRegex },
+        { category: searchRegex },
+      ],
+    });
+  }
+
   // 1. Category Filtering
   if (category) {
     query = query.find({
@@ -108,8 +122,8 @@ async function getAllProducts(reqQuery) {
   if (colors) {
     const colorSet = new Set(
       (Array.isArray(colors) ? colors : colors.split(",")).map((c) =>
-        c.trim().toLowerCase()
-      )
+        c.trim().toLowerCase(),
+      ),
     );
     if (colorSet.size > 0) {
       // Regex to match any of the colors (case insensitive)
@@ -121,7 +135,7 @@ async function getAllProducts(reqQuery) {
   // 3. Size Filtering
   if (sizes) {
     const sizeSet = new Set(
-      (Array.isArray(sizes) ? sizes : sizes.split(",")).map((s) => s.trim())
+      (Array.isArray(sizes) ? sizes : sizes.split(",")).map((s) => s.trim()),
     );
     // Determine if any variant has the specified size in stock
     // Since stock is Mixed (Map), we might need to check specific keys exist or use $where
