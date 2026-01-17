@@ -6,7 +6,7 @@ import { MdArrowBack } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 
 import { getUserOrders } from "../Redux/Customers/Order/Action";
-import { getUserAddresses } from "../Redux/Auth/Action";
+import { getUserAddresses } from "../Redux/Auth/action";
 import OrderStatusStepper from "./OrderStatusStepper";
 
 const OrderHistory = () => {

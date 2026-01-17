@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   addItemToWishlist,
   removeItemFromWishlist,
-} from "../Redux/Auth/Action";
+} from "../Redux/Auth/action";
 
 function ProductCard({ product, onQuickView }) {
   const navigate = useNavigate();

@@ -16,7 +16,7 @@ import { useCart } from "../Context/CartContext";
 import AuthModal from "../components/AuthModal/AuthModal";
 
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../Redux/Auth/Action";
+import { logout } from "../Redux/Auth/action";
 
 function Header() {
   const [show, setShow] = useState(true);

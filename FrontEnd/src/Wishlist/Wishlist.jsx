@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import ProductCard from "../Product/ProductCard";
 import { useNavigate } from "react-router-dom";
-import { getUser } from "../Redux/Auth/Action";
+import { getUser } from "../Redux/Auth/action";
 
 function Wishlist() {
   const { user } = useSelector((store) => store.auth);
@@ -52,7 +52,7 @@ function Wishlist() {
           {wishlistItems.map((product) =>
             product ? (
               <ProductCard key={product.id || product._id} product={product} />
-            ) : null
+            ) : null,
           )}
         </div>
       )}

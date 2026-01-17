@@ -27,7 +27,7 @@ import {
 import {
   addItemToWishlist,
   removeItemFromWishlist,
-} from "../Redux/Auth/Action";
+} from "../Redux/Auth/action";
 import { addItemToCart } from "../Redux/Customers/Cart/Action";
 import ProductCard from "./ProductCard";
 import { useCart } from "../Context/CartContext";
@@ -294,7 +294,7 @@ function ProductDetails() {
                   <FiChevronRight size={48} />
                 </button>
               </div>,
-              document.body
+              document.body,
             )}
 
           {/* Size Chart Modal */}
@@ -315,7 +315,7 @@ function ProductDetails() {
                   />
                 </div>
               </div>,
-              document.body
+              document.body,
             )}
 
           {/* Right Side - Product Details */}
