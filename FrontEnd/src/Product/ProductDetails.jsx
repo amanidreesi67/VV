@@ -27,7 +27,7 @@ import {
 import {
   addItemToWishlist,
   removeItemFromWishlist,
-} from "../Redux/Auth/action";
+} from "../Redux/Auth/Action";
 import { addItemToCart } from "../Redux/Customers/Cart/Action";
 import ProductCard from "./ProductCard";
 import { useCart } from "../Context/CartContext";

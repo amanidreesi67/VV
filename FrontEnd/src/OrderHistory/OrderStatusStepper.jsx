@@ -59,7 +59,7 @@ const OrderStatusStepper = ({ orderStatus, isCancelled }) => {
   return (
     <div className="relative flex items-center justify-between w-full max-w-2xl">
       {/* Line Background */}
-      <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 -z-0 -translate-y-1/2" />
+      <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 z-0 -translate-y-1/2" />
 
       {steps.map((step, index) => {
         const Icon = step.icon;

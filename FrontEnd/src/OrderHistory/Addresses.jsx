@@ -6,7 +6,7 @@ import {
   getUserAddresses,
   deleteAddress,
   updateAddress,
-} from "../Redux/Auth/action";
+} from "../Redux/Auth/Action";
 
 const Addresses = () => {
   const navigate = useNavigate();

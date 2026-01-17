@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-import { login, signup } from "../../Redux/Auth/action";
+import { login, signup } from "../../Redux/Auth/Action";
 import { IoClose, IoEye, IoEyeOff, IoArrowBack } from "react-icons/io5";
 
 const AuthModal = ({ isOpen, onClose }) => {

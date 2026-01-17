@@ -16,7 +16,7 @@ import {
   removeCartItem,
   updateCartItem,
 } from "../Redux/Customers/Cart/Action";
-import { getUserAddresses, addAddress } from "../Redux/Auth/action";
+import { getUserAddresses, addAddress } from "../Redux/Auth/Action";
 import { findProducts } from "../Redux/Customers/Product/action";
 import { useCart } from "../Context/CartContext";
 import confetti from "canvas-confetti";
