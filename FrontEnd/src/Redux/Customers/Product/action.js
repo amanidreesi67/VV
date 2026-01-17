@@ -44,6 +44,11 @@ export const findProducts = (reqQuery) => async (dispatch) => {
     if (pageNumber) params.append("pageNumber", pageNumber);
     if (pageSize) params.append("pageSize", pageSize);
 
+    // Support for search query
+    if (reqQuery.search || reqQuery.q) {
+      params.append("q", reqQuery.search || reqQuery.q);
+    }
+
     const { data } = await api.get(`/products?${params.toString()}`);
 
     dispatch({ type: FIND_PRODUCTS_SUCCESS, payload: data });

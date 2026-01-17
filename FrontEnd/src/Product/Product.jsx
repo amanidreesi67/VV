@@ -74,11 +74,22 @@ function Product() {
     const [minPrice, maxPrice] =
       priceValue === null ? [0, 100000] : priceValue.split("-").map(Number);
 
+    // Get Search Query
+    const searchQuery = searchParams.get("q");
+
     // Parse category from URL
     const queryCategory = searchParams.get("category");
     const paramCategory = LevelThree || levelTwo || levelOne || "";
-    // Priority: Query Param > Path Param
-    const categoryToUse = queryCategory || paramCategory;
+
+    // Priority: Search Query > Query Param > Path Param
+    // If search is present, we might want to ignore path category or treat it differently?
+    // For now, if we are on /pdt/search, levelOne is "search", so we should ignore levelOne as a category.
+
+    let categoryToUse = queryCategory || paramCategory;
+
+    if (levelOne === "search") {
+      categoryToUse = queryCategory || ""; // Don't use "search" as category
+    }
 
     const data = {
       category: categoryToUse,
@@ -91,6 +102,7 @@ function Product() {
       pageNumber: pageNumber - 1,
       pageSize: 12,
       stock: stock,
+      search: searchQuery, // Pass search query
     };
     dispatch(findProducts(data));
   }, [

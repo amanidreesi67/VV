@@ -83,7 +83,7 @@ function CartDrawer() {
       // Check if addresses are populated (have firstName or streetAddress) logic
       // If we just check user.addresses, it should trigger on Redux update
       const validAddresses = user.addresses.filter(
-        (a) => typeof a === "object" && (a.firstName || a.name)
+        (a) => typeof a === "object" && (a.firstName || a.name),
       );
 
       if (validAddresses.length > 0) {
@@ -152,7 +152,7 @@ function CartDrawer() {
       const orderResponse = await axios.post(
         `${API_BASE_URL}/payments/create-order`,
         { amount: totalPayable, currency: "INR" },
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       const {
@@ -178,7 +178,7 @@ function CartDrawer() {
                 razorpay_signature: response.razorpay_signature,
                 shippingAddress: selectedAddress, // Use selected address
               },
-              { headers: { Authorization: `Bearer ${token}` } }
+              { headers: { Authorization: `Bearer ${token}` } },
             );
 
             if (verifyResponse.data.success) {
@@ -255,7 +255,7 @@ function CartDrawer() {
   const [prevDiscount, setPrevDiscount] = useState(0);
 
   const { products: recommendedProductsData } = useSelector(
-    (store) => store.product
+    (store) => store.product,
   );
 
   useEffect(() => {
@@ -336,8 +336,8 @@ function CartDrawer() {
                   {remainingFor12 > 0
                     ? `Add products worth ₹${remainingFor12.toLocaleString()} to unlock 12% off!`
                     : remainingFor15 > 0
-                    ? `Add products worth ₹${remainingFor15.toLocaleString()} to unlock 15% off!`
-                    : "You've unlocked maximum discount!"}
+                      ? `Add products worth ₹${remainingFor15.toLocaleString()} to unlock 15% off!`
+                      : "You've unlocked maximum discount!"}
                 </p>
                 <div className="relative w-full h-2 bg-gray-200 rounded-full mb-6">
                   <div
@@ -593,8 +593,8 @@ function CartDrawer() {
                                     v.stock instanceof Map
                                       ? Array.from(v.stock.keys())[0]
                                       : v.stock
-                                      ? Object.keys(v.stock)[0]
-                                      : "OneSize";
+                                        ? Object.keys(v.stock)[0]
+                                        : "OneSize";
                                   // addToCart(rec, v, s, 1); // This function is not defined in the provided context.
                                 }
                               }}

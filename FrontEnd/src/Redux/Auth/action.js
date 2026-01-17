@@ -93,7 +93,7 @@ export const addAddress = (addressData) => async (dispatch) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     dispatch({ type: ADD_ADDRESS_SUCCESS, payload: response.data });
     return response.data;
@@ -156,7 +156,7 @@ export const updateAddress = (addressId, addressData) => async (dispatch) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     dispatch({ type: UPDATE_ADDRESS_SUCCESS, payload: response.data });
     return response.data;
@@ -180,7 +180,7 @@ export const addItemToWishlist = (productId) => async (dispatch) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     dispatch({ type: ADD_TO_WISHLIST_SUCCESS, payload: response.data });
     return response.data;
@@ -204,7 +204,7 @@ export const removeItemFromWishlist = (productId) => async (dispatch) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      }
+      },
     );
     dispatch({ type: REMOVE_FROM_WISHLIST_SUCCESS, payload: response.data });
     return response.data;

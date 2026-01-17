@@ -9,6 +9,12 @@ import {
   GET_USER_ORDERS_FAILURE,
   GET_USER_ORDERS_REQUEST,
   GET_USER_ORDERS_SUCCESS,
+  CANCEL_ORDER_REQUEST,
+  CANCEL_ORDER_SUCCESS,
+  CANCEL_ORDER_FAILURE,
+  RETURN_ORDER_REQUEST,
+  RETURN_ORDER_SUCCESS,
+  RETURN_ORDER_FAILURE,
 } from "./ActionType";
 // import { API_BASE_URL } from "../../../config/apiConfig";
 const API_BASE_URL =
@@ -73,6 +79,58 @@ export const getUserOrders = () => async (dispatch) => {
   } catch (error) {
     dispatch({
       type: GET_USER_ORDERS_FAILURE,
+      payload: error.message,
+    });
+  }
+};
+
+export const cancelOrder = (orderId) => async (dispatch) => {
+  dispatch({ type: CANCEL_ORDER_REQUEST });
+  try {
+    const jwt = localStorage.getItem("jwt");
+    const { data } = await axios.put(
+      `${API_BASE_URL}/orders/${orderId}/cancel`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+    dispatch({
+      type: CANCEL_ORDER_SUCCESS,
+      payload: data,
+    });
+    dispatch(getOrderById(orderId));
+  } catch (error) {
+    dispatch({
+      type: CANCEL_ORDER_FAILURE,
+      payload: error.message,
+    });
+  }
+};
+
+export const returnOrder = (orderId) => async (dispatch) => {
+  dispatch({ type: RETURN_ORDER_REQUEST });
+  try {
+    const jwt = localStorage.getItem("jwt");
+    const { data } = await axios.put(
+      `${API_BASE_URL}/orders/${orderId}/return`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        },
+      }
+    );
+    dispatch({
+      type: RETURN_ORDER_SUCCESS,
+      payload: data,
+    });
+    dispatch(getOrderById(orderId));
+  } catch (error) {
+    dispatch({
+      type: RETURN_ORDER_FAILURE,
       payload: error.message,
     });
   }

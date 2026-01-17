@@ -71,7 +71,7 @@ const Dashboard = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
               {/* ─── Sales Overview ─────────────────────────────── */}
               <div className="h-full">
-                <div className="bg-zinc-900 rounded-2xl shadow-xl border border-white/5 hover:border-white/10 transition-all duration-300 h-full overflow-hidden">
+                <div className="bg-zinc-900 rounded-2xl shadow-xl border border-white/5 hover:border-white/10 transition-all duration-300 h-auto">
                   <div className="p-4 h-full">
                     <SalesOverview overview={overview} />
                   </div>
@@ -80,7 +80,7 @@ const Dashboard = () => {
 
               {/* ─── Total Earnings ─────────────────────────────── */}
               <div className="h-full">
-                <div className="bg-zinc-900 rounded-2xl shadow-xl border border-white/5 hover:border-white/10 transition-all duration-300 h-full overflow-hidden">
+                <div className="bg-zinc-900 rounded-2xl shadow-xl border border-white/5 hover:border-white/10 transition-all duration-300 h-auto">
                   <div className="p-4 h-full">
                     <TotalEarning
                       amount={overview?.totalRevenue}
@@ -93,7 +93,7 @@ const Dashboard = () => {
 
               {/* ─── Key Metrics ─────────────────────────────── */}
               <div className="md:col-span-2 lg:col-span-1 h-full">
-                <div className="bg-zinc-900 rounded-2xl shadow-xl border border-white/5 hover:border-white/10 transition-all duration-300 h-full overflow-hidden">
+                <div className="bg-zinc-900 rounded-2xl shadow-xl border border-white/5 hover:border-white/10 transition-all duration-300 h-auto">
                   <div className="p-6 h-full flex flex-col">
                     <h2 className="text-xl font-bold mb-4 text-white">
                       Key Metrics
@@ -189,7 +189,7 @@ const Dashboard = () => {
             <div className="w-full">
               <div className="bg-zinc-900 rounded-2xl shadow-xl border border-white/5 hover:border-white/10 transition-all duration-300 h-full overflow-hidden">
                 <div className="p-0">
-                  <CustomersTable />
+                  <CustomersTable customers={overview?.recentUsers || []} />
                 </div>
               </div>
             </div>

@@ -37,9 +37,9 @@ router.delete(
   adminOrderController.deleteOrder
 );
 router.put(
-  "/:orderId/return",
+  "/:orderId/return/approve",
   authenticate,
-  adminOrderController.cancelledOrder
-); // Reusing/Fixing return logic if needed, Action.js calls /return
+  adminOrderController.approveReturn
+);
 
 export default router;

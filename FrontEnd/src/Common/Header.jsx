@@ -21,6 +21,7 @@ import { logout } from "../Redux/Auth/action";
 function Header() {
   const [show, setShow] = useState(true);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isLoadingOrders, setIsLoadingOrders] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -107,6 +108,15 @@ function Header() {
                   type="text"
                   placeholder="Search for products..."
                   autoFocus
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && searchTerm.trim()) {
+                      navigate(`/pdt/search?q=${searchTerm}`);
+                      setIsSearchOpen(false);
+                      setSearchTerm("");
+                    }
+                  }}
                   className="w-full text-center border border-gray-400 rounded-full py-2 px-6 focus:outline-none focus:border-black text-gray-800 placeholder-gray-500 bg-transparent text-lg transition-colors"
                 />
               </div>
@@ -201,7 +211,7 @@ function Header() {
         </div>
 
         <div className="w-full bg-[#252525]">
-          <div className="text-white  flex gap-7 max-w-[1150px] mx-auto">
+          <div className="text-white  flex gap-7 max-w-[1390px] mx-auto px-4 lg:px-0">
             {HeaderNavigation.map((data) => (
               <div key={data.id} className="relative group">
                 {/* Title */}

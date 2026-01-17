@@ -52,7 +52,7 @@ function Wishlist() {
           {wishlistItems.map((product) =>
             product ? (
               <ProductCard key={product.id || product._id} product={product} />
-            ) : null
+            ) : null,
           )}
         </div>
       )}
