@@ -12,7 +12,7 @@ import OrderStatusStepper from "./OrderStatusStepper";
 const OrderHistory = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [showCreditsInfo, setShowCreditsInfo] = useState(false);
+
   const [user, setUser] = useState({ firstName: "", lastName: "", email: "" });
   const { orders, loading } = useSelector((store) => store.order);
   const { user: authUser } = useSelector((store) => store.auth);
@@ -86,25 +86,6 @@ const OrderHistory = () => {
             </button>
             )
           </p>
-
-          <button className="bg-[#9c27b0] text-white px-6 py-2 rounded font-semibold hover:bg-[#7b1fa2] transition-colors mb-4">
-            Show my Credits
-          </button>
-
-          <div className="mb-8">
-            <button
-              onClick={() => setShowCreditsInfo(!showCreditsInfo)}
-              className="w-full flex justify-between items-center bg-[#f3e5f5] p-4 rounded text-[#9c27b0] font-medium"
-            >
-              <span>How to use the credits??</span>
-              <span>{showCreditsInfo ? "-" : "+"}</span>
-            </button>
-            {showCreditsInfo && (
-              <div className="bg-[#f3e5f5] px-4 pb-4 text-sm text-gray-700">
-                <p>Credits can be used on checkout...</p>
-              </div>
-            )}
-          </div>
 
           <h2 className="text-2xl font-serif mb-4">Order History</h2>
 
