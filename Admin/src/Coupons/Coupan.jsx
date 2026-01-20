@@ -170,11 +170,22 @@ function Coupan() {
                     </TableCell>
                     <TableCell
                       sx={{
-                        color: coupon.isActive ? "#4ade80" : "#f87171",
+                        color:
+                          coupon.expiresAt &&
+                          new Date(coupon.expiresAt) < new Date()
+                            ? "#f87171" // Red for Expired
+                            : coupon.isActive
+                              ? "#4ade80"
+                              : "#f87171",
                         fontWeight: "bold",
                       }}
                     >
-                      {coupon.isActive ? "Active" : "Inactive"}
+                      {coupon.expiresAt &&
+                      new Date(coupon.expiresAt) < new Date()
+                        ? "Expired"
+                        : coupon.isActive
+                          ? "Active"
+                          : "Inactive"}
                     </TableCell>
                     <TableCell sx={{ color: "white" }}>
                       {coupon.expiresAt

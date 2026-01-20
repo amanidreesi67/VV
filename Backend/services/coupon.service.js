@@ -10,6 +10,7 @@ const createCoupon = async (reqData) => {
       usageLimit,
       isActive,
       expiresAt,
+      maxDiscountValue,
     } = reqData;
 
     // Check if coupon exists
@@ -26,6 +27,7 @@ const createCoupon = async (reqData) => {
       usageLimit,
       isActive,
       expiresAt,
+      maxDiscountValue,
     });
 
     return await coupon.save();
@@ -99,6 +101,9 @@ const applyCoupon = async (code, orderAmount, userId) => {
     let discountAmount = 0;
     if (coupon.discountType === "percentage") {
       discountAmount = (orderAmount * coupon.discountValue) / 100;
+      if (coupon.maxDiscountValue && coupon.maxDiscountValue > 0) {
+        discountAmount = Math.min(discountAmount, coupon.maxDiscountValue);
+      }
     } else {
       discountAmount = coupon.discountValue;
     }

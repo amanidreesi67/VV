@@ -33,14 +33,18 @@ function Home() {
         }}
         navigation={true}
         modules={[Autoplay, Pagination]}
-        className="w-full h-300"
+        className="w-full h-[85vh]"
       >
         {HeroSectionSwiper.map((data) => (
-          <SwiperSlide key={data.id} className="relative">
+          <SwiperSlide
+            key={data.id}
+            className="relative cursor-pointer"
+            onClick={() => Navigate("/pdt/clothing")}
+          >
             <img
               src={data.img}
               alt={data.title}
-              className="w-full h-300 object-cover "
+              className="w-full h-[85vh] object-cover object-center"
             />
           </SwiperSlide>
         ))}
@@ -62,7 +66,11 @@ function Home() {
         </p>
         <div className="grid grid-cols-4 gap-6 cursor-pointer">
           {homeOptionsData.map((data) => (
-            <div key={data.id} className="rounded-xl overflow-hidden" onClick={() => Navigate(data.link)}>
+            <div
+              key={data.id}
+              className="rounded-xl overflow-hidden"
+              onClick={() => Navigate(data.link)}
+            >
               <img
                 src={data.img}
                 alt={data.title}
@@ -88,7 +96,11 @@ function Home() {
           className="h-112.5 w-full "
         >
           {getTheLookData.map((data) => (
-            <SwiperSlide key={data.id} className="relative cursor-pointer" onClick={() => Navigate(data.link)}>
+            <SwiperSlide
+              key={data.id}
+              className="relative cursor-pointer"
+              onClick={() => Navigate(data.link)}
+            >
               <img
                 src={data.img}
                 className="w-full h-112.5 object-cover rounded-xl overflow-hidden"

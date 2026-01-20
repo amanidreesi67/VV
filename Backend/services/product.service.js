@@ -7,22 +7,69 @@ async function createProduct(reqData) {
     topLevel = { id: 0 };
   }
 
+  // VALIDATION: Ensure at least one variant exists
+  if (!reqData.variants || reqData.variants.length === 0) {
+    throw new Error("At least one product variant is required.");
+  }
+
+  // VALIDATION: Ensure at least one variant has images
+  const hasImages = reqData.variants.some(
+    (v) => v.images && v.images.length > 0,
+  );
+  if (!hasImages) {
+    throw new Error("At least one product variant must have images.");
+  }
+
+  // LOGIC: Price Inheritance
+  // If a variant has no price, inherit from root price (reqData.price or reqData.discountedPrice)
+  const rootPrice = reqData.price || reqData.discountedPrice;
+  const processedVariants = reqData.variants.map((variant) => {
+    let variantPrice = variant.price;
+    if (!variantPrice || variantPrice <= 0) {
+      if (rootPrice && rootPrice > 0) {
+        variantPrice = rootPrice;
+      } else {
+        // If THIS specific variant is the one supposed to have price (and others inherit),
+        // we might check that later, but simpler to ensure every variant ends up with a price.
+        // If we can't find a price, it remains as is (might validly be 0 if free? unlikely).
+      }
+    }
+    return {
+      ...variant,
+      price: variantPrice,
+    };
+  });
+
+  // Re-validate: Ensure every variant actually has a price now?
+  // User asked: "There is atleast one product that is implemented with images and have price for specificly that product"
+  // And "if i dont give price to variants the price for the main product will be considered"
+
+  // Let's ensure at least one variant has a valid price > 0 after processing
+  const hasPrice = processedVariants.some((v) => v.price && v.price > 0);
+  if (!hasPrice) {
+    throw new Error(
+      "At least one variant must have a valid price, or a main product price must be set.",
+    );
+  }
+
   const product = new Product({
     id: topLevel.id + 1,
     title: reqData.title,
     color: reqData.color,
     description: reqData.description,
     discountedPercent: reqData.discountedPercent,
-    images: reqData.images, // Expecting array of strings
+    images: reqData.images,
     brand: reqData.brand,
-    sizes: reqData.sizes, // Expecting array of objects/strings based on frontend
+    sizes: reqData.sizes,
     quantity: reqData.quantity,
     category: reqData.category,
     topLevelCategory: reqData.topLevelCategory,
     secondLevelCategory: reqData.secondLevelCategory,
     thirdLevelCategory: reqData.thirdLevelCategory,
-    variants: reqData.variants,
+    variants: processedVariants,
     details: reqData.details,
+    price: reqData.price, // NEW
+    discountedPrice: reqData.discountedPrice, // NEW
   });
 
   return await product.save();
@@ -38,6 +85,27 @@ async function deleteProduct(productId) {
 }
 
 async function updateProduct(productId, reqData) {
+  // LOGIC: Price Inheritance for Update
+  if (reqData.variants && reqData.variants.length > 0) {
+    const rootPrice = reqData.price || reqData.discountedPrice;
+
+    // We need to be careful if rootPrice is NOT in reqData (partial update).
+    // If it's a partial update, we might need to fetch the existing product to get the root price.
+    // For now, let's assume if variants are being updated, the form sends necessary data or we rely on what's provided.
+
+    reqData.variants = reqData.variants.map((variant) => {
+      let variantPrice = variant.price;
+      // Only override if it's missing/zero AND we have a rootPrice to fallback to
+      if ((!variantPrice || variantPrice <= 0) && rootPrice > 0) {
+        variantPrice = rootPrice;
+      }
+      return {
+        ...variant,
+        price: variantPrice,
+      };
+    });
+  }
+
   const product = await Product.findByIdAndUpdate(productId, reqData, {
     new: true,
   });
@@ -107,12 +175,13 @@ async function getAllProducts(reqQuery) {
 
   // 1. Category Filtering
   if (category) {
+    const categoryList = category.split(",").map((c) => c.trim());
     query = query.find({
       $or: [
-        { topLevelCategory: category },
-        { secondLevelCategory: category },
-        { thirdLevelCategory: category },
-        { category: category },
+        { topLevelCategory: { $in: categoryList } },
+        { secondLevelCategory: { $in: categoryList } },
+        { thirdLevelCategory: { $in: categoryList } },
+        { category: { $in: categoryList } },
       ],
     });
   }
@@ -172,11 +241,20 @@ async function getAllProducts(reqQuery) {
   if (sort) {
     const sortDirection = sort === "price_high" ? -1 : 1;
     if (sort === "price_high" || sort === "price_low") {
-      query = query.sort({ "variants.0.price": sortDirection }); // Approx sort by first variant price
-    } else if (sort === "newest") {
+      // Sort by discountedPrice if available, otherwise price.
+      // Note: MongoDB simple sort doesn't coalesce.
+      // But we can sort by discountedPrice directly.
+      // If we assume discountedPrice is populated for all relevant products.
+      query = query.sort({
+        discountedPrice: sortDirection,
+        price: sortDirection,
+      });
       query = query.sort({ createdAt: -1 });
     }
   }
+
+  // FORCE NUMERIC ORDERING for clean sorting even if data is dirty (strings)
+  query = query.collation({ locale: "en", numericOrdering: true });
 
   const totalProducts = await Product.countDocuments(query);
   const skip = (pageNumber - 1) * pageSize;

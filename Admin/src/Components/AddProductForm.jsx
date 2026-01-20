@@ -31,6 +31,7 @@ const AddProductForm = ({ readOnly = false }) => {
     topLevelCategory: "",
     secondLevelCategory: "",
     thirdLevelCategory: "",
+    details: [{ key: "", value: "" }],
   });
 
   const [variants, setVariants] = useState([
@@ -66,6 +67,12 @@ const AddProductForm = ({ readOnly = false }) => {
         secondLevelCategory: productToUpdate.secondLevelCategory || "",
         thirdLevelCategory:
           productToUpdate.category?.name || productToUpdate.category || "",
+        details: productToUpdate.details
+          ? Object.entries(productToUpdate.details).map(([key, value]) => ({
+              key,
+              value,
+            }))
+          : [{ key: "", value: "" }],
       });
 
       if (productToUpdate.variants && productToUpdate.variants.length > 0) {
@@ -102,7 +109,15 @@ const AddProductForm = ({ readOnly = false }) => {
   // Handle Input Change for Top Level
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name.startsWith("detail-")) {
+      const index = parseInt(name.split("-")[1], 10);
+      const field = name.split("-")[2]; // "key" or "value"
+      const updatedDetails = [...formData.details];
+      updatedDetails[index][field] = value;
+      setFormData((prev) => ({ ...prev, details: updatedDetails }));
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   // Main Images (kept for consistency though may be unused in this specific file version)
@@ -132,6 +147,10 @@ const AddProductForm = ({ readOnly = false }) => {
   };
 
   const removeVariant = (index) => {
+    if (variants.length <= 1) {
+      alert("At least one variant is required.");
+      return;
+    }
     setVariants(variants.filter((_, i) => i !== index));
   };
 
@@ -159,7 +178,7 @@ const AddProductForm = ({ readOnly = false }) => {
   const removeStockRow = (vIndex, sIndex) => {
     const updated = [...variants];
     updated[vIndex].stock = updated[vIndex].stock.filter(
-      (_, i) => i !== sIndex
+      (_, i) => i !== sIndex,
     );
     setVariants(updated);
   };
@@ -194,27 +213,103 @@ const AddProductForm = ({ readOnly = false }) => {
     setSuccess(false);
 
     try {
+      // --- VALIDATION START ---
+      const missingFields = [];
+      if (!formData.title) missingFields.push("Title");
+      if (!formData.description) missingFields.push("Description");
+      if (!formData.price) missingFields.push("Original Price");
+      if (!formData.topLevelCategory) missingFields.push("Top Level Category");
+      if (!formData.secondLevelCategory)
+        missingFields.push("Second Level Category");
+
+      if (missingFields.length > 0) {
+        throw new Error(`Missing required fields: ${missingFields.join(", ")}`);
+      }
+
+      // Check Variants for Color
+      const invalidVariantColor = variants.some(
+        (v) => !v.color || v.color.trim() === "",
+      );
+      if (invalidVariantColor) {
+        throw new Error("All variants must have a Color Name.");
+      }
+      // --- VALIDATION END ---
+
       const payload = new FormData();
 
       // 1. Basic Fields
       payload.append("title", formData.title);
       payload.append("brand", formData.brand);
       payload.append("description", formData.description);
-      // payload.append("price", formData.price); // Removed
-      // payload.append("discountedPrice", formData.discountedPrice); // Removed
+
+      // Use price/discountedPrice as Root Price
+      if (formData.price) payload.append("price", formData.price);
+      if (formData.discountedPrice)
+        payload.append("discountedPrice", formData.discountedPrice);
+
       payload.append("discountedPercent", formData.discountPercentage);
       payload.append("quantity", 0); // Aggregate quantity later if needed
       payload.append(
         "category",
-        formData.thirdLevelCategory || formData.secondLevelCategory || ""
+        formData.thirdLevelCategory || formData.secondLevelCategory || "",
       );
       payload.append("topLevelCategory", formData.topLevelCategory || "");
       payload.append("secondLevelCategory", formData.secondLevelCategory || "");
       payload.append("thirdLevelCategory", formData.thirdLevelCategory || "");
 
+      // Append Details
+      // Convert details array to object
+      const detailsMap = {};
+      formData.details.forEach((d) => {
+        if (d.key && d.value) detailsMap[d.key] = d.value;
+      });
+      payload.append("details", JSON.stringify(detailsMap));
+
       // 2. Main Images (Use First Variant's images as Main Images)
       if (variants[0]?.files?.length > 0) {
         variants[0].files.forEach((f) => payload.append("images", f));
+      }
+
+      // VALIDATION
+      if (variants.length === 0) {
+        throw new Error("At least one variant is required.");
+      }
+
+      // Check if at least one variant has images (either new files or existing previews)
+      const hasImages = variants.some(
+        (v) =>
+          (v.files && v.files.length > 0) ||
+          (v.previews && v.previews.length > 0),
+      );
+      if (!hasImages) {
+        throw new Error("At least one product variant must have images.");
+      }
+
+      // Check if at least one price source exists (Global Price OR Variant Price)
+      const globalPrice =
+        Number(formData.price) || Number(formData.discountedPrice);
+      const hasVariantPrice = variants.some(
+        (v) => v.basePrice && Number(v.basePrice) > 0,
+      );
+
+      // If no global price, EVERY variant must have a price? Or just at least one?
+      // User said: "if i dont give price to variants the price for the main product will be considered"
+      // Implies: If Global Price exists, Variant Price is optional.
+      // If Global Price DOES NOT exist, specific Variant Price is MANDATORY for that variant?
+      // Let's enforce: Either Global Price > 0 OR (All variants have prices? Or just one?)
+      // Simplest safe rule: If Global Price is 0/Empty, then ALL variants must have a price.
+      // Actually strictly: We need at least one valid price path.
+
+      // If Global Price is missing, we must ensure every variant has a price (since they can't inherit).
+      if (!globalPrice || globalPrice <= 0) {
+        const allVariantsHavePrice = variants.every(
+          (v) => v.basePrice && Number(v.basePrice) > 0,
+        );
+        if (!allVariantsHavePrice) {
+          throw new Error(
+            "If no global/main price is set, ALL variants must have a specific price.",
+          );
+        }
       }
 
       // 3. Variants
@@ -225,11 +320,19 @@ const AddProductForm = ({ readOnly = false }) => {
           if (item.size) stockMap[item.size] = Number(item.quantity) || 0;
         });
 
+        // Determine effective price for this variant
+        // We just send what we have.
+        // FILTER EXISTING IMAGES (Strings) from previews to preserve them
+        const existingImages = (v.previews || []).filter(
+          (url) => typeof url === "string" && !url.startsWith("blob:"),
+        );
+
         return {
           color: v.color,
           hex: v.hex,
-          price: Number(v.basePrice) || Number(formData.discountedPrice), // Renamed basePrice to price
+          price: Number(v.basePrice) || 0,
           stock: stockMap,
+          images: existingImages, // Send existing images to backend
         };
       });
 
@@ -264,6 +367,7 @@ const AddProductForm = ({ readOnly = false }) => {
           topLevelCategory: "",
           secondLevelCategory: "",
           thirdLevelCategory: "",
+          details: [{ key: "", value: "" }],
         });
 
         setVariants([
@@ -307,8 +411,8 @@ const AddProductForm = ({ readOnly = false }) => {
         {readOnly
           ? "Product Details"
           : isEditing
-          ? "Update Product"
-          : "Add New Product"}
+            ? "Update Product"
+            : "Add New Product"}
       </h1>
 
       <form onSubmit={handleSubmit} className="space-y-8">
@@ -346,7 +450,7 @@ const AddProductForm = ({ readOnly = false }) => {
             </div>
             <div className="md:col-span-2">
               <label className="block text-sm mb-2 text-gray-400">
-                Description
+                Description <span className="text-red-500">*</span>
               </label>
               <textarea
                 name="description"
@@ -355,6 +459,7 @@ const AddProductForm = ({ readOnly = false }) => {
                 rows={4}
                 className="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 focus:border-indigo-500 outline-none transition disabled:opacity-50"
                 disabled={readOnly}
+                required
               />
             </div>
           </div>
@@ -367,6 +472,7 @@ const AddProductForm = ({ readOnly = false }) => {
               onChange={handleInputChange}
               className="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 disabled:opacity-50"
               disabled={readOnly}
+              required
             >
               <option value="">-- Top Category --</option>
               {Object.keys(categoryHierarchy || {}).map((key) => (
@@ -382,6 +488,7 @@ const AddProductForm = ({ readOnly = false }) => {
               onChange={handleInputChange}
               disabled={readOnly || !secondLevelOptions.length}
               className="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 disabled:opacity-50"
+              required
             >
               <option value="">-- Sub Category --</option>
               {secondLevelOptions.map((option) => (
@@ -396,7 +503,7 @@ const AddProductForm = ({ readOnly = false }) => {
           <div className="grid grid-cols-3 gap-6 mt-6">
             <div>
               <label className="block text-sm mb-2 text-gray-400">
-                Original Price
+                Original Price <span className="text-red-500">*</span>
               </label>
               <input
                 name="price"
@@ -405,6 +512,7 @@ const AddProductForm = ({ readOnly = false }) => {
                 onChange={handleInputChange}
                 className="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 disabled:opacity-50"
                 disabled={readOnly}
+                required
               />
             </div>
             <div>
@@ -433,6 +541,63 @@ const AddProductForm = ({ readOnly = false }) => {
           </div>
         </section>
 
+        {/* --- Product Details Section --- */}
+        <section className="bg-zinc-900 p-6 rounded-xl border border-zinc-800">
+          <h2 className="text-xl font-semibold mb-6 text-indigo-400">
+            Product Details
+          </h2>
+          <div className="space-y-4">
+            {formData.details.map((detail, index) => (
+              <div key={index} className="flex gap-4 items-center">
+                <input
+                  name={`detail-${index}-key`}
+                  value={detail.key}
+                  onChange={handleInputChange}
+                  placeholder="Heading (e.g. Fabric)"
+                  className="w-1/3 bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 disabled:opacity-50"
+                  disabled={readOnly}
+                />
+                <input
+                  name={`detail-${index}-value`}
+                  value={detail.value}
+                  onChange={handleInputChange}
+                  placeholder="Value (e.g. Cotton)"
+                  className="w-full bg-black/50 border border-zinc-700 rounded-lg px-4 py-3 disabled:opacity-50"
+                  disabled={readOnly}
+                />
+                {!readOnly && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const updated = formData.details.filter(
+                        (_, i) => i !== index,
+                      );
+                      setFormData({ ...formData, details: updated });
+                    }}
+                    className="text-gray-500 hover:text-red-500 transition-colors"
+                  >
+                    x
+                  </button>
+                )}
+              </div>
+            ))}
+            {!readOnly && (
+              <button
+                type="button"
+                onClick={() =>
+                  setFormData({
+                    ...formData,
+                    details: [...formData.details, { key: "", value: "" }],
+                  })
+                }
+                className="text-sm bg-zinc-800 px-4 py-2 rounded hover:bg-zinc-700"
+              >
+                + Add Detail
+              </button>
+            )}
+          </div>
+        </section>
+
         {/* --- Variants Section --- */}
         <section className="space-y-6">
           <h2 className="text-2xl font-bold text-white flex justify-between items-center">
@@ -453,7 +618,7 @@ const AddProductForm = ({ readOnly = false }) => {
               key={vIndex}
               className="bg-zinc-900 p-6 rounded-xl border border-zinc-700 relative"
             >
-              {!readOnly && (
+              {!readOnly && variants.length > 1 && (
                 <button
                   type="button"
                   onClick={() => removeVariant(vIndex)}
@@ -470,7 +635,7 @@ const AddProductForm = ({ readOnly = false }) => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div>
                   <label className="block text-sm mb-1 text-gray-400">
-                    Color Name
+                    Color Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     value={variant.color}
@@ -480,6 +645,7 @@ const AddProductForm = ({ readOnly = false }) => {
                     placeholder="Red, Blue..."
                     className="w-full bg-black/50 border border-zinc-700 rounded px-3 py-2 disabled:opacity-50"
                     disabled={readOnly}
+                    required
                   />
                 </div>
                 <div>
@@ -564,7 +730,7 @@ const AddProductForm = ({ readOnly = false }) => {
                             vIndex,
                             sIndex,
                             "size",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className="w-20 bg-zinc-800 border border-zinc-600 rounded px-2 py-1 text-center disabled:opacity-50"
@@ -579,7 +745,7 @@ const AddProductForm = ({ readOnly = false }) => {
                             vIndex,
                             sIndex,
                             "quantity",
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         className="w-20 bg-zinc-800 border border-zinc-600 rounded px-2 py-1 text-center disabled:opacity-50"
@@ -635,8 +801,8 @@ const AddProductForm = ({ readOnly = false }) => {
               {loading
                 ? "Processing..."
                 : isEditing
-                ? "Update Product"
-                : "Create Product"}
+                  ? "Update Product"
+                  : "Create Product"}
             </button>
           )}
         </div>
