@@ -32,7 +32,7 @@ const ViewAllOffers = ({ isOpen, onClose, currentCouponCode }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+    <div className="fixed inset-0 z-60 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
       <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[80vh] animate-slide-up">
         {/* Header */}
         <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white text-black sticky top-0 z-10">
