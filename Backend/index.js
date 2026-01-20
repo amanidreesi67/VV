@@ -62,7 +62,18 @@ app.use("/api/blogs", blogRoutes);
 import couponRoutes from "./routes/coupon.route.js";
 app.use("/api/coupons", couponRoutes);
 
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("Globar Error Handler:", err);
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(500).json({
+    message: err.message || "Internal Server Error",
+    error: process.env.NODE_ENV === "development" ? err : {},
+  });
+});
+
 app.listen(PORT, () => {
   console.log("Server running on port:", PORT);
 });
-// Trigger restart

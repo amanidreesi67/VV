@@ -17,7 +17,7 @@ const CouponModal = ({ onClose, couponData }) => {
   const dispatch = useDispatch();
   const isEditMode = !!couponData;
   const { loading, success, error, message } = useSelector(
-    (store) => store.createCoupon
+    (store) => store.createCoupon,
   );
 
   const [formData, setFormData] = useState({
@@ -28,6 +28,7 @@ const CouponModal = ({ onClose, couponData }) => {
     usageLimit: "",
     isActive: true,
     expiresAt: "",
+    maxDiscountValue: "",
   });
 
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -215,6 +216,18 @@ const CouponModal = ({ onClose, couponData }) => {
             onChange={handleChange}
           />
 
+          {formData.discountType === "percentage" && (
+            <TextField
+              sx={textFieldSz}
+              label="Max Discount Limit (Optional)"
+              name="maxDiscountValue"
+              type="number"
+              fullWidth
+              value={formData.maxDiscountValue}
+              onChange={handleChange}
+            />
+          )}
+
           <TextField
             sx={textFieldSz}
             label="Minimum Order Amount"
@@ -266,8 +279,8 @@ const CouponModal = ({ onClose, couponData }) => {
             {loading
               ? "Submitting..."
               : isEditMode
-              ? "Update Coupon"
-              : "Create Coupon"}
+                ? "Update Coupon"
+                : "Create Coupon"}
           </Button>
         </form>
       </Box>

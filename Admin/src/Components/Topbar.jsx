@@ -24,7 +24,7 @@ const Topbar = ({ toggleSidebar }) => {
         </button>
         <div className="flex items-center gap-3">
           <div
-            className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-indigo-600 to-indigo-800 flex items-center justify-center shadow-lg shadow-indigo-500/20"
+            className="w-8 h-8 lg:w-10 lg:h-10 bg-linear-to-br from-indigo-600 to-indigo-800 flex items-center justify-center shadow-lg shadow-indigo-500/20"
             style={{
               clipPath:
                 "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",

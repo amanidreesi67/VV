@@ -31,6 +31,7 @@ import OrderSuccess from "./Order/OrderSuccess";
 import { useDispatch, useSelector } from "react-redux"; // Import hooks
 import { useEffect } from "react";
 import { getUser } from "./Redux/Auth/action.js";
+import { getCart } from "./Redux/Customers/Cart/Action.js";
 
 function App() {
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ function App() {
   useEffect(() => {
     if (token) {
       dispatch(getUser(token));
+      dispatch(getCart());
     }
   }, [dispatch, token]);
 
