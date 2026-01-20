@@ -103,12 +103,25 @@ function ProductDetails() {
         setSelectedImage(defaultVariant.images[0]);
         // Set default size if available in stock
         // Check if stock is map or object
+        const stockData = defaultVariant.stock;
         const sizes =
-          product.variants[0].stock instanceof Map
-            ? Array.from(product.variants[0].stock.keys())
-            : Object.keys(product.variants[0].stock || {});
+          stockData instanceof Map
+            ? Array.from(stockData.keys())
+            : Object.keys(stockData || {});
 
-        if (sizes.length > 0) setSelectedSize(sizes[0]);
+        const firstAvailableSize = sizes.find((size) => {
+          const qty =
+            stockData instanceof Map
+              ? Number(stockData.get(size))
+              : Number(stockData?.[size]);
+          return qty > 0;
+        });
+
+        if (firstAvailableSize) {
+          setSelectedSize(firstAvailableSize);
+        } else if (sizes.length > 0) {
+          setSelectedSize(sizes[0]);
+        }
       }
 
       // Fetch similar products for recommendations
@@ -119,11 +132,25 @@ function ProductDetails() {
   const handleColorChange = (variant) => {
     setSelectedVariant(variant);
     setSelectedImage(variant.images[0]);
+    const stockData = variant.stock;
     const sizes =
-      variant.stock instanceof Map
-        ? Array.from(variant.stock.keys())
-        : Object.keys(variant.stock || {});
-    if (sizes.length > 0) setSelectedSize(sizes[0]);
+      stockData instanceof Map
+        ? Array.from(stockData.keys())
+        : Object.keys(stockData || {});
+
+    const firstAvailableSize = sizes.find((size) => {
+      const qty =
+        stockData instanceof Map
+          ? Number(stockData.get(size))
+          : Number(stockData?.[size]);
+      return qty > 0;
+    });
+
+    if (firstAvailableSize) {
+      setSelectedSize(firstAvailableSize);
+    } else if (sizes.length > 0) {
+      setSelectedSize(sizes[0]);
+    }
   };
 
   if (!product || !selectedVariant) {
@@ -398,14 +425,22 @@ function ProductDetails() {
                     return (
                       <div key={size} className="relative group">
                         <button
-                          onClick={() => setSelectedSize(size)}
-                          className={`min-w-12 h-12 flex items-center justify-center border font-medium transition-all duration-200 ${
-                            selectedSize === size
-                              ? "border-black bg-black text-white"
-                              : "border-gray-200 hover:border-black text-gray-900"
+                          onClick={() => stockQty > 0 && setSelectedSize(size)}
+                          disabled={stockQty <= 0}
+                          className={`min-w-12 h-12 flex items-center justify-center border font-medium transition-all duration-200 relative overflow-hidden ${
+                            stockQty <= 0
+                              ? "border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed"
+                              : selectedSize === size
+                                ? "border-black bg-black text-white"
+                                : "border-gray-200 hover:border-black text-gray-900"
                           } ${isLowStock ? "mb-2" : ""}`} // Add margin if low stock badge to prevent overlapping next row if wrapped tightly, though absolute positioning handles it mostly.
                         >
                           {size}
+                          {stockQty <= 0 && (
+                            <div className="absolute inset-0 flex justify-center items-center">
+                              <div className="w-full h-px bg-gray-300 rotate-45 transform origin-center scale-110"></div>
+                            </div>
+                          )}
                         </button>
                         {isLowStock && (
                           <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-black text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md whitespace-nowrap z-10 shadow-sm leading-none border border-white">

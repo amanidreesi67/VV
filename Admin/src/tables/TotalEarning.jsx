@@ -14,7 +14,13 @@ const TotalEarning = ({ overview = {} }) => {
       avatar: "/images/loading-gif.gif",
       title: "Total Revenue",
       subtitle: "Recent transaction",
-      amount: `$${overview?.totalRevenue ?? 0}`,
+      amount: `$${
+        overview?.totalRevenue
+          ? Number(overview.totalRevenue).toLocaleString("en-IN", {
+              maximumFractionDigits: 2,
+            })
+          : 0
+      }`,
       progress: 85,
       color: "text-indigo-400",
     },
@@ -45,7 +51,11 @@ const TotalEarning = ({ overview = {} }) => {
           </h2>
           <div className="flex items-center gap-1 mt-1">
             <h3 className="text-3xl font-bold text-white">
-              {overview?.totalRevenue ? `$${overview.totalRevenue}` : "$0"}
+              {overview?.totalRevenue
+                ? `$${Number(overview.totalRevenue).toLocaleString("en-IN", {
+                    maximumFractionDigits: 2,
+                  })}`
+                : "$0"}
             </h3>
             <div className="flex items-center text-green-400 text-sm font-medium bg-green-400/10 px-1.5 py-0.5 rounded ml-2">
               <Icon path={mdiMenuUp} size={0.8} />
@@ -69,8 +79,8 @@ const TotalEarning = ({ overview = {} }) => {
                   index === 0
                     ? mdiCurrencyUsd
                     : index === 1
-                    ? mdiChartLine
-                    : mdiMenuUp
+                      ? mdiChartLine
+                      : mdiMenuUp
                 }
                 size={1.2}
                 className={item.color}
@@ -92,8 +102,8 @@ const TotalEarning = ({ overview = {} }) => {
                     index === 0
                       ? "bg-indigo-500"
                       : index === 1
-                      ? "bg-emerald-500"
-                      : "bg-orange-500"
+                        ? "bg-emerald-500"
+                        : "bg-orange-500"
                   }`}
                   style={{ width: `${item.progress}%` }}
                 ></div>

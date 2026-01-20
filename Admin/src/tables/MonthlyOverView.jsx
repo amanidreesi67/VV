@@ -30,7 +30,11 @@ const MonthlyOverview = ({ overview = {} }) => {
       icon: mdiCellphoneLink,
     },
     {
-      stats: overview?.totalRevenue ? `$${overview.totalRevenue}` : "$0",
+      stats: overview?.totalRevenue
+        ? `$${Number(overview.totalRevenue).toLocaleString("en-IN", {
+            maximumFractionDigits: 2,
+          })}`
+        : "$0",
       title: "Revenue",
       color: "bg-cyan-600",
       icon: mdiCurrencyUsd,
