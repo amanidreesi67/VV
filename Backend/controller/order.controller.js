@@ -41,7 +41,15 @@ const cancelOrder = async (req, res) => {
 
 const requestReturn = async (req, res) => {
   try {
-    const order = await orderService.requestReturn(req.params.id, req.user._id);
+    const payload = { ...req.body };
+    if (req.files && req.files.length > 0) {
+      payload.returnImages = req.files.map((file) => file.path);
+    }
+    const order = await orderService.requestReturn(
+      req.params.id,
+      req.user._id,
+      payload,
+    );
     res.status(200).send(order);
   } catch (error) {
     res.status(400).send({ error: error.message });

@@ -74,7 +74,7 @@ const deleteOrder = async (req, res) => {
 const approveReturn = async (req, res) => {
   const orderId = req.params.orderId;
   try {
-    const order = await orderService.approveReturn(orderId);
+    const order = await orderService.approveReturn(orderId, req.body);
     return res.status(200).send(order);
   } catch (error) {
     return res.status(500).send({ error: error.message });

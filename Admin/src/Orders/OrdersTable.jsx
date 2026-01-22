@@ -97,7 +97,7 @@ const OrdersTable = () => {
         pageSize: 10,
         status: formData.status,
         sort: formData.sort,
-      })
+      }),
     );
   }, [
     page,
@@ -157,7 +157,7 @@ const OrdersTable = () => {
     handleUpdateStatusMenuClose(index);
     setUpdatingOrderId(orderId);
     await dispatch(requestReturn(orderId));
-    setOrderStatus("RETURNED_REQUESTED");
+    setOrderStatus("RETURN_REQUESTED");
     setUpdatingOrderId(null);
   };
 
@@ -166,7 +166,7 @@ const OrdersTable = () => {
     setUpdatingOrderId(orderId);
     const payload = {
       orderId,
-      status: "RETURNED_APPROVED",
+      status: "RETURNED",
       adminNote: "Manually marked as returned by admin",
     };
     await dispatch(returnedOrder(payload));
@@ -502,7 +502,7 @@ const OrdersTable = () => {
             top: "5%",
             left: "25%",
             transform: "translate(-50%, -10%)",
-            zIndex: 9999,
+            zIndex: 100000,
           }}
         >
           <Box
@@ -534,7 +534,9 @@ const OrdersTable = () => {
               </IconButton>
 
               <Typography variant="h6" sx={{ mb: 2, color: "white" }}>
-                Handle Return Request
+                {selectedOrder.returnRequestType === "EXCHANGE"
+                  ? "Handle Exchange Request"
+                  : "Handle Return Request"}
               </Typography>
 
               {/* Reason */}
@@ -752,6 +754,9 @@ const OrdersTable = () => {
                   <MenuItem value={"SHIPPED"}>Shipped</MenuItem>
                   <MenuItem value={"OUTFORDELIVERY"}>Out For Delivery</MenuItem>
                   <MenuItem value={"DELIVERED"}>Delivered</MenuItem>
+                  <MenuItem value={"RETURN_REQUESTED"}>
+                    Return Requested
+                  </MenuItem>
                   <MenuItem value={"CANCELLED"}>Cancelled</MenuItem>
                 </Select>
               </FormControl>
@@ -964,28 +969,36 @@ const OrdersTable = () => {
                           fontWeight: "bold",
                           textAlign: "center",
                           fontSize: "0.75rem",
-                          height: "24px",
                         }}
-                        label={item.orderStatus.replace(/_/g, " ")}
+                        label={
+                          item.orderStatus === "RETURN_REQUESTED" &&
+                          item.returnRequestType === "EXCHANGE"
+                            ? "EXCHANGE REQUESTED"
+                            : item.orderStatus === "RETURN_APPROVED" &&
+                                item.returnRequestType === "EXCHANGE"
+                              ? "EXCHANGE APPROVED"
+                              : item.orderStatus.replace(/_/g, " ")
+                        }
                         size="small"
                         color={
                           item.orderStatus === "PENDING"
                             ? "info"
                             : item.orderStatus === "CONFIRMED"
-                            ? "warning"
-                            : item.orderStatus === "SHIPPED"
-                            ? "primary"
-                            : item.orderStatus === "OUT_FOR_DELIVERY"
-                            ? "secondary"
-                            : item.orderStatus === "DELIVERED"
-                            ? "success"
-                            : item.orderStatus === "RETURNED"
-                            ? "success"
-                            : item.orderStatus === "RETURNED_REQUESTED"
-                            ? "warning"
-                            : item.orderStatus === "CANCELLED"
-                            ? "error"
-                            : "default"
+                              ? "warning"
+                              : item.orderStatus === "SHIPPED"
+                                ? "primary"
+                                : item.orderStatus === "OUT_FOR_DELIVERY"
+                                  ? "secondary"
+                                  : item.orderStatus === "DELIVERED"
+                                    ? "success"
+                                    : item.orderStatus === "RETURNED" ||
+                                        item.orderStatus === "RETURN_APPROVED"
+                                      ? "success"
+                                      : item.orderStatus === "RETURN_REQUESTED"
+                                        ? "warning"
+                                        : item.orderStatus === "CANCELLED"
+                                          ? "error"
+                                          : "default"
                         }
                       />
                     </TableCell>
@@ -1013,9 +1026,14 @@ const OrdersTable = () => {
                             }
                             variant="contained"
                             size="small"
+                            disabled={item.orderStatus === "RETURN_REJECTED"}
                             sx={{
                               bgcolor: "#4f46e5",
                               "&:hover": { bgcolor: "#4338ca" },
+                              "&.Mui-disabled": {
+                                bgcolor: "rgba(79, 70, 229, 0.4)",
+                                color: "rgba(255, 255, 255, 0.5)",
+                              },
                             }} // Indigo-600
                           >
                             Status
@@ -1037,7 +1055,8 @@ const OrdersTable = () => {
                                 item.orderStatus === "DELIVERED" ||
                                 item.orderStatus === "SHIPPED" ||
                                 item.orderStatus === "OUT_FOR_DELIVERY" ||
-                                item.orderStatus === "CONFIRMED"
+                                item.orderStatus === "CONFIRMED" ||
+                                item.orderStatus === "RETURN_APPROVED"
                               }
                             >
                               Confirmed Status
@@ -1046,7 +1065,8 @@ const OrdersTable = () => {
                               disabled={
                                 item.orderStatus === "DELIVERED" ||
                                 item.orderStatus === "OUT_FOR_DELIVERY" ||
-                                item.orderStatus === "SHIPPED"
+                                item.orderStatus === "SHIPPED" ||
+                                item.orderStatus === "RETURN_APPROVED"
                               }
                               onClick={() =>
                                 handleShippedOrder(item._id, index)
@@ -1060,7 +1080,8 @@ const OrdersTable = () => {
                               }
                               disabled={
                                 item.orderStatus === "DELIVERED" ||
-                                item.orderStatus === "OUT_FOR_DELIVERY"
+                                item.orderStatus === "OUT_FOR_DELIVERY" ||
+                                item.orderStatus === "RETURN_APPROVED"
                               }
                             >
                               Out For Delivery
@@ -1071,17 +1092,28 @@ const OrdersTable = () => {
                               }
                               disabled={
                                 item.orderStatus === "DELIVERED" ||
-                                item.orderStatus === "RETURNED_REQUESTED" ||
-                                item.orderStatus === "RETURNED"
+                                item.orderStatus === "RETURN_REQUESTED" ||
+                                item.orderStatus === "RETURNED" ||
+                                item.orderStatus === "RETURN_APPROVED"
                               }
                             >
                               Delivered Order
                             </MenuItem>
-                            {item.returnStatus === "REQUESTED" && (
+                            {/* item.returnStatus === "REQUESTED" check might be redundant if orderStatus is updated, but safe to keep or use orderStatus */}
+                            {item.orderStatus === "RETURN_REQUESTED" && (
                               <MenuItem
                                 onClick={() => handleOpenReturnModal(item)}
                               >
                                 Approve/Reject Return
+                              </MenuItem>
+                            )}
+                            {item.orderStatus === "RETURN_APPROVED" && (
+                              <MenuItem
+                                onClick={() =>
+                                  handleReturnedOrder(item._id, index)
+                                }
+                              >
+                                Mark as Returned
                               </MenuItem>
                             )}
                             {item.orderStatus === "RETURNED" && (
@@ -1094,7 +1126,7 @@ const OrdersTable = () => {
 
                     {/* Delete Options (Delete / Return) */}
                     <TableCell sx={{ textAlign: "center" }}>
-                      {item.orderStatus === "RETURNED_REQUESTED" ? (
+                      {item.orderStatus === "RETURN_REQUESTED" ? (
                         <Button
                           onClick={() => handleOpenReturnModal(item)}
                           variant="contained"
@@ -1103,12 +1135,6 @@ const OrdersTable = () => {
                         >
                           Review
                         </Button>
-                      ) : item.orderStatus === "RETURN_APPROVED" ? (
-                        <Chip
-                          label="Return Approved"
-                          color="success"
-                          size="small"
-                        />
                       ) : item.orderStatus === "RETURN_REJECTED" ? (
                         <Chip
                           label="Return Rejected"

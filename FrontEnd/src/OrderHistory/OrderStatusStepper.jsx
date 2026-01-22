@@ -6,9 +6,10 @@ import {
   MdInventory2,
   MdHome,
   MdCancel,
+  MdAssignmentReturn,
 } from "react-icons/md";
 
-const OrderStatusStepper = ({ orderStatus, isCancelled }) => {
+const OrderStatusStepper = ({ orderStatus, isCancelled, order }) => {
   const steps = [
     { label: "Placed", status: "PLACED", icon: MdConfirmationNumber },
     { label: "Confirmed", status: "CONFIRMED", icon: MdCheckCircle },
@@ -20,6 +21,29 @@ const OrderStatusStepper = ({ orderStatus, isCancelled }) => {
     },
     { label: "Delivered", status: "DELIVERED", icon: MdHome },
   ];
+
+  if (
+    orderStatus === "RETURN_REQUESTED" ||
+    orderStatus === "RETURN_APPROVED" ||
+    orderStatus === "RETURNED"
+  ) {
+    steps.push({
+      label:
+        order?.returnRequestType === "EXCHANGE"
+          ? orderStatus === "RETURNED"
+            ? "Exchange Received"
+            : orderStatus === "RETURN_APPROVED"
+              ? "Exchange Approved"
+              : "Exchange Requested"
+          : orderStatus === "RETURNED"
+            ? "Returned"
+            : orderStatus === "RETURN_APPROVED"
+              ? "Return Approved"
+              : "Return Requested",
+      status: "RETURN_APPROVED",
+      icon: MdAssignmentReturn,
+    });
+  }
 
   const getActiveStep = (status) => {
     switch (status) {
@@ -34,12 +58,13 @@ const OrderStatusStepper = ({ orderStatus, isCancelled }) => {
         return 3;
       case "DELIVERED":
         return 4;
-      case "CANCELLED":
-        return -1;
+      case "RETURN_REQUESTED":
+        return 4; // Not yet completed (colored)
       case "RETURNED":
-      case "RETURNED_REQUESTED":
       case "RETURN_APPROVED":
         return 5;
+      case "CANCELLED":
+        return -1;
       default:
         return 0;
     }
@@ -73,7 +98,9 @@ const OrderStatusStepper = ({ orderStatus, isCancelled }) => {
             <div
               className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-colors ${
                 isCompleted
-                  ? "bg-green-500 border-green-500 text-white"
+                  ? step.status === "RETURN_APPROVED"
+                    ? "bg-red-500 border-red-500 text-white"
+                    : "bg-green-500 border-green-500 text-white"
                   : "bg-white border-gray-300 text-gray-300"
               }`}
             >
@@ -81,7 +108,11 @@ const OrderStatusStepper = ({ orderStatus, isCancelled }) => {
             </div>
             <p
               className={`text-[10px] font-bold hidden sm:block ${
-                isCompleted ? "text-black" : "text-gray-400"
+                isCompleted
+                  ? step.status === "RETURN_APPROVED"
+                    ? "text-red-600"
+                    : "text-black"
+                  : "text-gray-400"
               }`}
             >
               {step.label}

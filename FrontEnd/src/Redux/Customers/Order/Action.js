@@ -25,7 +25,7 @@ export const createOrder = (reqData) => async (dispatch) => {
   try {
     const { data } = await axios.post(
       `${API_BASE_URL}/orders/`,
-      reqData.address
+      reqData.address,
     );
     if (data._id) {
       reqData.navigate({ search: `step=3&order_id=${data._id}` });
@@ -95,7 +95,7 @@ export const cancelOrder = (orderId) => async (dispatch) => {
         headers: {
           Authorization: `Bearer ${jwt}`,
         },
-      }
+      },
     );
     dispatch({
       type: CANCEL_ORDER_SUCCESS,
@@ -110,18 +110,18 @@ export const cancelOrder = (orderId) => async (dispatch) => {
   }
 };
 
-export const returnOrder = (orderId) => async (dispatch) => {
+export const returnOrder = (orderId, reqData) => async (dispatch) => {
   dispatch({ type: RETURN_ORDER_REQUEST });
   try {
     const jwt = localStorage.getItem("jwt");
     const { data } = await axios.put(
       `${API_BASE_URL}/orders/${orderId}/return`,
-      {},
+      reqData,
       {
         headers: {
           Authorization: `Bearer ${jwt}`,
         },
-      }
+      },
     );
     dispatch({
       type: RETURN_ORDER_SUCCESS,

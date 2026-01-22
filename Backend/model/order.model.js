@@ -65,10 +65,27 @@ const orderSchema = new mongoose.Schema({
     enum: ["NONE", "REQUESTED", "APPROVED", "REJECTED", "COMPLETED"],
     default: "NONE",
   },
+  returnRequestType: {
+    type: String,
+    enum: ["RETURN", "EXCHANGE"],
+    default: "RETURN",
+  },
   returnReason: {
     type: String,
     default: null,
   },
+  returnDescription: {
+    type: String,
+    default: null,
+  },
+  returnImages: [
+    {
+      type: String,
+    },
+  ],
+  returnAdminNote: String,
+  returnDeclineReason: String,
+  returnApprovedDate: Date,
   cancelReason: {
     type: String,
     default: null,

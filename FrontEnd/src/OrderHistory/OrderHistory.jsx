@@ -101,7 +101,11 @@ const OrderHistory = () => {
                 >
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <p className="font-bold text-lg">Order #{order._id}</p>
+                      <p className="font-bold text-lg">
+                        {order.orderItems?.[0]?.product?.title || "Order"}
+                        {order.orderItems?.length > 1 &&
+                          ` & ${order.orderItems.length - 1} more`}
+                      </p>
                       <MdArrowBack className="rotate-180 text-gray-400" />
                     </div>
                     <p className="text-gray-500 text-sm">
@@ -132,6 +136,7 @@ const OrderHistory = () => {
                       <OrderStatusStepper
                         orderStatus={order.orderStatus}
                         isCancelled={order.orderStatus === "CANCELLED"}
+                        order={order}
                       />
                     </div>
                   </div>

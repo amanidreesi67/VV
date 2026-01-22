@@ -68,6 +68,8 @@ const placeOrder = async (orderId) => {
   return await order.save();
 };
 
+// Function removed (moved to bottom)
+
 const confirmedOrder = async (orderId) => {
   const order = await findOrderById(orderId);
   order.orderStatus = "CONFIRMED";
@@ -260,7 +262,7 @@ const cancelOrder = async (orderId, userId) => {
   return await order.save();
 };
 
-const requestReturn = async (orderId, userId) => {
+const requestReturn = async (orderId, userId, payload) => {
   const order = await findOrderById(orderId);
   if (!order) throw new Error("Order not found");
 
@@ -283,21 +285,41 @@ const requestReturn = async (orderId, userId) => {
   }
 
   order.returnStatus = "REQUESTED";
-  order.returnReason = "User requested return"; // Pass as arg if needed
+  order.orderStatus = "RETURN_REQUESTED";
+  order.returnRequestType = payload.returnRequestType || "RETURN";
+  order.returnReason = payload.returnReason || "User requested return";
+  order.returnDescription = payload.returnDescription || "";
+  order.returnImages = payload.returnImages || [];
+
   return await order.save();
 };
 
-const approveReturn = async (orderId) => {
+const approveReturn = async (orderId, payload = {}) => {
   const order = await findOrderById(orderId);
-  if (!order) throw new Error("Order not found");
 
-  if (order.returnStatus !== "REQUESTED") {
-    throw new Error("Return request not found or already processed.");
+  if (payload.status === "RETURN_REJECTED") {
+    order.orderStatus = "RETURN_REJECTED";
+    order.returnStatus = "REJECTED";
+    order.returnDeclineReason = payload.rejectionMessage;
+  } else if (
+    payload.status === "RETURNED" ||
+    payload.status === "RETURNED_APPROVED"
+  ) {
+    order.orderStatus = "RETURNED";
+    // Keep returnStatus as APPROVED or move to COMPLETED if supported
+  } else {
+    // Approved
+    order.returnStatus = "APPROVED";
+    order.returnApprovedDate = new Date();
+    order.orderStatus = "RETURN_APPROVED";
   }
 
-  order.returnStatus = "APPROVED";
-  order.orderStatus = "RETURNED"; // Update main status to RETURNED upon approval
-  return await order.save();
+  if (payload.adminNote) {
+    order.returnAdminNote = payload.adminNote;
+  }
+
+  await order.save();
+  return order;
 };
 
 export default {
